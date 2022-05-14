@@ -8,12 +8,19 @@ namespace dae
 	{
 	public:
 		Scene& CreateScene(const std::string& name);
+		std::shared_ptr<Scene> GetScene(const std::string& name) const;
+		std::shared_ptr<Scene> GetActiveScene() const;
 
-		void Update();
+		void SetSceneAsActive(const std::string& name);
+		void SetSceneAsActive(std::shared_ptr<dae::Scene> scene);
+
+		void Update(float deltaTime);
 		void Render();
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::shared_ptr<Scene>> m_Scenes;
+
+		std::shared_ptr<Scene> m_ActiveScene;
 	};
 }

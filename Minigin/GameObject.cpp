@@ -1,24 +1,50 @@
 #include "MiniginPCH.h"
 #include "GameObject.h"
-#include "ResourceManager.h"
-#include "Renderer.h"
+#include "Component.h"
 
-dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update(){}
+dae::GameObject::~GameObject()
+{
+	for (int index = static_cast<int>(m_Components.size()) - 1; index >= 0; index--)
+	{
+		delete m_Components[index];
+		m_Components.pop_back();
+	}
+}
+
+void dae::GameObject::Startup()
+{
+	for (Component* pElement : m_Components)
+	{
+		pElement->Startup();
+	}
+}
+
+void dae::GameObject::Update()
+{
+	for (Component* pElement : m_Components)
+	{
+		pElement->Update();
+	}
+}
 
 void dae::GameObject::Render() const
 {
-	const auto& pos = m_Transform.GetPosition();
-	Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
+	for (const Component* pElement : m_Components)
+	{
+		pElement->Render();
+	}
 }
 
-void dae::GameObject::SetTexture(const std::string& filename)
+void dae::GameObject::MarkForDelete()
 {
-	m_Texture = ResourceManager::GetInstance().LoadTexture(filename);
+	m_IsMarkedForDeletion = true;
 }
 
-void dae::GameObject::SetPosition(float x, float y)
+bool dae::GameObject::GetIsMarkedForDelete() const
 {
-	m_Transform.SetPosition(x, y, 0.0f);
+	return m_IsMarkedForDeletion;
 }
+
+
+
