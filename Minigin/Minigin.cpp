@@ -8,6 +8,7 @@
 #include "TextObject.h"
 #include "GameObject.h"
 #include "Scene.h"
+#include "TestCommand.h"
 
 using namespace std;
 
@@ -57,7 +58,9 @@ void dae::Minigin::Initialize()
  */
 void dae::Minigin::LoadGame() const
 {
-
+	// input
+	auto& input = InputManager::GetInstance();
+	input.SetCommandToButton(0, XboxController::ControllerButton::GAMEPAD_A, new TestCommand(), InputManager::InputType::KeyUp);
 }
 
 void dae::Minigin::Cleanup()
@@ -83,6 +86,9 @@ void dae::Minigin::Run()
 		bool doContinue = true;
 		float lag = 0.0f;
 		auto lastTime = std::chrono::high_resolution_clock::now();
+
+		//float test = 0.0f;
+
 		while (doContinue)
 		{
 			const auto currentTime = std::chrono::high_resolution_clock::now();
@@ -90,7 +96,13 @@ void dae::Minigin::Run()
 			lastTime = currentTime;
 			lag += deltaTime;
 
-			input.ProcessInput();
+			doContinue = input.ProcessInput();
+
+			/*test += deltaTime;
+			if (test > 3)
+			{
+				doContinue = false;
+			}*/
 
 			while (lag >= FixedTimeStep)
 			{
