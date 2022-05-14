@@ -90,7 +90,7 @@ void dae::Minigin::Run()
 			lastTime = currentTime;
 			lag += deltaTime;
 
-			doContinue = input.ProcessInput();
+			input.ProcessInput();
 
 			while (lag >= FixedTimeStep)
 			{
