@@ -60,7 +60,8 @@ void dae::Minigin::LoadGame() const
 {
 	// input
 	auto& input = InputManager::GetInstance();
-	input.SetCommandToButton(0, XboxController::ControllerButton::GAMEPAD_A, new TestCommand(), InputManager::InputType::KeyUp);
+	input.SetCommandToButton(0, XboxController::ControllerButton::GAMEPAD_A, new TestCommand(), InputManager::InputState::KeyUp);
+	input.SetCommandToKey(0, SDLK_q, new TestCommand(), InputManager::InputState::KeyPressed);
 }
 
 void dae::Minigin::Cleanup()

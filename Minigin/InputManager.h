@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "Command.h"
+#include "KeyboardController.h"
 #include "Singleton.h"
 #include "XboxController.h"
 
@@ -11,7 +12,7 @@ namespace dae
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
-		enum class InputType
+		enum class InputState
 		{
 			KeyPressed,
 			KeyUp,
@@ -29,36 +30,56 @@ namespace dae
 
 		bool ProcessInput();
 
-		void SetCommandToButton(unsigned int controllerIndex, XboxController::ControllerButton button, Command* command, InputType inputType);
+		void SetCommandToButton(unsigned int controllerIndex, XboxController::ControllerButton button, Command* command, InputState inputType);
+		void SetCommandToKey(unsigned int controllerIndex, SDL_Keycode key, Command* command, InputState inputType);
 
 		void AddPLayer(unsigned int i = -1);
 
 	private:
-		std::unique_ptr<XboxController>* m_pXboxController = nullptr;
 		std::vector<XboxController*> m_pControllers;
+		std::vector<KeyboardController*> m_pKeyboards;
+
+		enum class InputType
+		{
+			XboxController,
+			KeyBoard
+		};
 
 		struct KeyInfo
 		{
 			KeyInfo(unsigned int i, XboxController::ControllerButton button)
-			: ControllerIndex{ i }
-			, Button{ button }{}
+			: PlayerControllerIndex{ i }
+			, Button{ button }
+			{
+				type = InputType::XboxController;
+			}
+			KeyInfo(unsigned int i, SDL_Keycode key)
+				: PlayerControllerIndex{ i }
+				, Key{ key }
+			{
+				type = InputType::KeyBoard;
+			}
 			
-			unsigned int ControllerIndex;
+			unsigned int PlayerControllerIndex;
+
 			XboxController::ControllerButton Button;
+			SDL_Keycode Key;
+
+			InputType type;
 
 			bool operator==(const KeyInfo& other) const
 			{
-				return ControllerIndex == other.ControllerIndex && Button == other.Button;
+				return PlayerControllerIndex == other.PlayerControllerIndex && Button == other.Button;
 			}
 		};
 		struct CommandInfo
 		{
-			CommandInfo(Command* pCommand, InputType inputType)
+			CommandInfo(Command* pCommand, InputState inputType)
 				: pCommand{ pCommand }
 				, InputType{ inputType }{}
 
 			Command* pCommand;
-			InputType InputType;
+			InputState InputType;
 		};
 		struct KeyInfoHasher
 		{
@@ -69,7 +90,6 @@ namespace dae
 		};
 
 		std::unordered_map<KeyInfo, CommandInfo, KeyInfoHasher> m_Commands;
-
 	};
 
 }

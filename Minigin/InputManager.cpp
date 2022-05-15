@@ -4,6 +4,7 @@
 dae::InputManager::InputManager()
 {
 	m_pControllers.push_back(new XboxController(0));
+	m_pKeyboards.push_back(new KeyboardController(0));
 }
 
 dae::InputManager::~InputManager()
@@ -13,6 +14,13 @@ dae::InputManager::~InputManager()
 		delete controller;
 		controller = nullptr;
 	}
+
+	for (auto& keyboard : m_pKeyboards)
+	{
+		delete keyboard;
+		keyboard = nullptr;
+	}
+
 	for (auto& command : m_Commands)
 	{
 		delete command.second.pCommand;
@@ -26,26 +34,39 @@ bool dae::InputManager::ProcessInput()
 	{
 		//check input
 		m_pControllers[i]->ProcessInput();
+		m_pKeyboards[i]->ProcessInput();
 
 		//For every command check what states it need, and then if check if its true, if so activate that command
 		for (const auto& command : m_Commands)
 		{
 			switch (command.second.InputType)
 			{
-			case InputType::KeyPressed:
+			case InputState::KeyPressed:
 				if (m_pControllers[i]->IsPressed(command.first.Button))
 				{
 					command.second.pCommand->Execute();
 				}
-				break;
-			case InputType::KeyUp:
-				if (m_pControllers[i]->IsUp(command.first.Button))
+				else if(m_pKeyboards[i]->IsPressed(command.first.Key))
 				{
 					command.second.pCommand->Execute();
 				}
 				break;
-			case InputType::KeyDown:
+			case InputState::KeyUp:
+				if (m_pControllers[i]->IsUp(command.first.Button))
+				{
+					command.second.pCommand->Execute();
+				}
+				else if (m_pKeyboards[i]->IsUp(command.first.Key))
+				{
+					command.second.pCommand->Execute();
+				}
+				break;
+			case InputState::KeyDown:
 				if (m_pControllers[i]->IsDown(command.first.Button))
+				{
+					command.second.pCommand->Execute();
+				}
+				else if (m_pKeyboards[i]->IsDown(command.first.Key))
 				{
 					command.second.pCommand->Execute();
 				}
@@ -63,9 +84,16 @@ bool dae::InputManager::ProcessInput()
 	return true;
 }
 
-void dae::InputManager::SetCommandToButton(unsigned int controllerIndex, XboxController::ControllerButton button, Command* command, InputType inputType)
+void dae::InputManager::SetCommandToButton(unsigned int controllerIndex, XboxController::ControllerButton button, Command* command, InputState inputType)
 {
 	const KeyInfo keyInfo = { controllerIndex, button };
+	const CommandInfo commandInfo = { command, inputType };
+	m_Commands.insert({ keyInfo, commandInfo });
+}
+
+void dae::InputManager::SetCommandToKey(unsigned int controllerIndex, SDL_Keycode key, Command* command, InputState inputType)
+{
+	const KeyInfo keyInfo = { controllerIndex, key };
 	const CommandInfo commandInfo = { command, inputType };
 	m_Commands.insert({ keyInfo, commandInfo });
 }
