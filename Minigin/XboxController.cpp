@@ -16,10 +16,10 @@ private:
 	int m_ControllerIndex;
 public:
 	XboxControllerImpl(int controllerIndex)
+		: m_ControllerIndex{ controllerIndex }
 	{
 		ZeroMemory(&PreviousState, sizeof(XINPUT_STATE));
 		ZeroMemory(&CurrentState, sizeof(XINPUT_STATE));
-		m_ControllerIndex = controllerIndex;
 	}
 	void ProcessInput()
 	{

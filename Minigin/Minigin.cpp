@@ -60,8 +60,8 @@ void dae::Minigin::LoadGame() const
 {
 	// input
 	auto& input = InputManager::GetInstance();
-	input.SetCommandToButton(0, XboxController::ControllerButton::GAMEPAD_A, new TestCommand(), InputManager::InputState::KeyUp);
-	input.SetCommandToKey(0, SDLK_q, new TestCommand(), InputManager::InputState::KeyPressed);
+	input.SetCommandToButton(0, XboxController::ControllerButton::GAMEPAD_A, new TestCommand(), InputManager::InputState::KeyDown);
+	input.SetCommandToKey(0, SDLK_q, new TestCommand(), InputManager::InputState::KeyDown);
 }
 
 void dae::Minigin::Cleanup()
@@ -89,6 +89,8 @@ void dae::Minigin::Run()
 		auto lastTime = std::chrono::high_resolution_clock::now();
 
 		//float test = 0.0f;
+
+
 
 		while (doContinue)
 		{

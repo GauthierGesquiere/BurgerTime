@@ -51,6 +51,7 @@ namespace dae
 			: PlayerControllerIndex{ i }
 			, Button{ button }
 			{
+				Key = 0;
 				type = InputType::XboxController;
 			}
 			KeyInfo(unsigned int i, SDL_Keycode key)
@@ -62,8 +63,8 @@ namespace dae
 			
 			unsigned int PlayerControllerIndex;
 
-			XboxController::ControllerButton Button;
-			SDL_Keycode Key;
+			XboxController::ControllerButton Button{};
+			SDL_Keycode Key{};
 
 			InputType type;
 

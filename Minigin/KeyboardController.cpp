@@ -1,96 +1,102 @@
 #include "MiniginPCH.h"
 #include "KeyboardController.h"
 
+#include <future>
+#include <thread>
 
 
 class dae::KeyboardController::KeyboardControllerImpl
 {
 private:
 	std::vector<SDL_Keycode> m_FirstPressedKeys;
-	std::vector<SDL_Keycode> m_SecondPressedKeys;
+	//std::vector<SDL_Keycode> m_SecondPressedKeys;
 	//Switch between the first and second pressed keys,
 	//so you can check if the key is released, or is down
-	bool m_FirstKeysIsCurrent = false;
+	//bool m_FirstKeysIsCurrent = false;
 
 	SDL_Keycode m_PreviousKey{};
 	SDL_Keycode m_CurrentKey{};
 
+	WORD ButtonsPressedThisFrame{};
+	WORD ButtonsReleasedThisFrame{};
+
 	int m_ControllerIndex;
+
+	int test{ 0 };
+
+	SDL_Event e{};
+
 public:
+
 	KeyboardControllerImpl(int controllerIndex)
 		: m_ControllerIndex{ controllerIndex }
-	{}
+	{
+		SDL_PollEvent(&e);
+		/*auto RunPollEventLoop = [this]()
+		{
+			SDL_Event e;
+			while (this) 
+			{
+				m_PreviousKey = m_CurrentKey;
+				m_CurrentKey = NULL;
+
+				while (SDL_PollEvent(&e))
+				{
+					if (e.type == SDL_KEYDOWN)
+					{
+						m_CurrentKey = e.key.keysym.sym;
+					}
+					if (e.type == SDL_KEYUP)
+					{
+						m_CurrentKey = e.key.keysym.sym;
+					}
+				}
+
+				const auto buttonChanges = m_CurrentKey ^ m_PreviousKey;
+				ButtonsPressedThisFrame = buttonChanges & static_cast<WORD>(m_CurrentKey);
+				ButtonsReleasedThisFrame = buttonChanges & ~(static_cast<WORD>(m_CurrentKey));
+			}
+		};*/
+
+		//std::thread KeyboardInput(RunPollEventLoop);
+		//KeyboardInput.detach();
+
+		m_PreviousKey = NULL;
+		m_CurrentKey = NULL;
+	}
 
 	void ProcessInput()
 	{
 		m_PreviousKey = m_CurrentKey;
 
-		m_FirstKeysIsCurrent = !m_FirstKeysIsCurrent;
-		if (m_FirstKeysIsCurrent)
-		{
-			m_FirstPressedKeys.clear();
-		}
-		else
-		{
-			m_SecondPressedKeys.clear();
-		}
-
-
-		m_CurrentKey = NULL;
-
-		SDL_Event e;
-		while (SDL_PollEvent(&e)) 
+		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_KEYDOWN)
 			{
-				if (m_FirstKeysIsCurrent)
-				{
-					m_FirstPressedKeys.push_back(e.key.keysym.sym);
-					m_CurrentKey = e.key.keysym.sym;
-				}
-				else
-				{
-					m_SecondPressedKeys.push_back(e.key.keysym.sym);
-					m_CurrentKey = e.key.keysym.sym;
-				}
+				m_CurrentKey = e.key.keysym.sym;
 			}
-			
+			if (e.type == SDL_KEYUP)
+			{
+				m_CurrentKey = NULL;
+			}
 		}
+
+		const auto buttonChanges = m_CurrentKey ^ m_PreviousKey;
+		ButtonsPressedThisFrame = buttonChanges & static_cast<WORD>(m_CurrentKey);
+		ButtonsReleasedThisFrame = buttonChanges & ~(static_cast<WORD>(m_CurrentKey));
 	}
 
 	bool IsPressed(SDL_Keycode key) const
 	{
-		if (m_FirstKeysIsCurrent)
-		{
-			return CheckKeys(key, m_FirstPressedKeys);
-		}
-		return CheckKeys(key, m_SecondPressedKeys);
+		return static_cast<WORD>(m_CurrentKey) & int(key);
 	};
 	bool IsDown(SDL_Keycode key) const
 	{
-		if (m_FirstKeysIsCurrent)
-		{
-			return CheckKeys(key, m_SecondPressedKeys);
-		}
-		return CheckKeys(key, m_FirstPressedKeys);
+		return ButtonsPressedThisFrame & int(key);
 	};
 	bool IsUp(SDL_Keycode key) const
 	{
-		if (m_CurrentKey != m_PreviousKey)
-		{
-			if (m_FirstKeysIsCurrent)
-			{
-				return CheckKeys(key, m_FirstPressedKeys);
-			}
-			return CheckKeys(key, m_SecondPressedKeys);
-		}
-		return false;
-	}
-
-	bool CheckKeys(const SDL_Keycode& keycode, const std::vector<SDL_Keycode>& keysToCheck) const
-	{
-		const auto findItr = std::find(keysToCheck.begin(), keysToCheck.end(), keycode);
-		return findItr != keysToCheck.end();
+		return ButtonsReleasedThisFrame & int(key);
 	}
 };
 
