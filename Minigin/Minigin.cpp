@@ -1,6 +1,8 @@
 #include "MiniginPCH.h"
 #include "Minigin.h"
 #include <thread>
+
+#include "EventQueue.h"
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "Renderer.h"
@@ -82,6 +84,7 @@ void dae::Minigin::Run()
 		auto& renderer = Renderer::GetInstance();
 		auto& sceneManager = SceneManager::GetInstance();
 		auto& input = InputManager::GetInstance();
+		auto& eventQueue = EventQueue::GetInstance();
 
 
 		bool doContinue = true;
@@ -112,8 +115,11 @@ void dae::Minigin::Run()
 				sceneManager.Update(FixedTimeStep);
 				lag -= FixedTimeStep;
 			}
-
 			sceneManager.Update(deltaTime);
+
+			eventQueue.HandleEventQueue();
+			sceneManager.GetActiveScene()->DeleteRemovedObjects();
+			sceneManager.GetActiveScene()->AddObjects();
 			renderer.Render();
 		}
 	}
