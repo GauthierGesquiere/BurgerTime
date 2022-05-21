@@ -27,8 +27,8 @@ namespace dae
 		NullAudioService& operator=(NullAudioService&& other) = delete;
 		virtual ~NullAudioService() = default;
 
-		void PlayMusic(const std::string& filename, int volumePercentage) override {}
-		void PlaySound(const std::string& filename, int volumePercentage) override {}
+		void PlayMusic(const std::string& /*filename*/, int /*volumePercentage*/) override {}
+		void PlaySound(const std::string& /*filename*/, int /*volumePercentage*/) override {}
 		void ProcessSoundRequests() override {}
 
 	};

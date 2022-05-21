@@ -1,7 +1,10 @@
 #include "MiniginPCH.h"
 #include "Minigin.h"
+
+#include <future>
 #include <thread>
 
+#include "AudioService.h"
 #include "EventQueue.h"
 #include "InputManager.h"
 #include "SceneManager.h"
@@ -10,6 +13,8 @@
 #include "TextObject.h"
 #include "GameObject.h"
 #include "Scene.h"
+#include "SdlMixerAudioService.h"
+#include "ServiceLocator.h"
 #include "TestCommand.h"
 
 using namespace std;
@@ -51,6 +56,9 @@ void dae::Minigin::Initialize()
 
 	Renderer::GetInstance().Init(m_Window);
 
+	auto* pAudioService = new SdlMixerAudioService();
+	ServiceLocator::GetInstance().RegisterAudioService(pAudioService);
+
 	// tell the resource manager where he can find the game data
 	ResourceManager::GetInstance().Init("../Data/");
 }
@@ -90,9 +98,14 @@ void dae::Minigin::Run()
 		float lag = 0.0f;
 		auto lastTime = std::chrono::high_resolution_clock::now();
 
-		//float test = 0.0f;
-
-
+		auto audioFuture = std::async(launch::async, [&doContinue]()
+			{
+				const auto& audio = ServiceLocator::GetInstance().GetAudioService();
+				while (doContinue)
+				{
+					audio->ProcessSoundRequests();
+				}
+			});
 
 		while (doContinue)
 		{
@@ -102,12 +115,6 @@ void dae::Minigin::Run()
 			lag += deltaTime;
 
 			doContinue = input.ProcessInput();
-
-			/*test += deltaTime;
-			if (test > 3)
-			{
-				doContinue = false;
-			}*/
 
 			while (lag >= FixedTimeStep)
 			{
