@@ -78,10 +78,9 @@ void dae::Minigin::Run()
 {
 	Initialize();
 	LoadGame();
-	
 
 	{
-		auto& renderer = Renderer::GetInstance();
+		const auto& renderer = Renderer::GetInstance();
 		auto& sceneManager = SceneManager::GetInstance();
 		auto& input = InputManager::GetInstance();
 		auto& eventQueue = EventQueue::GetInstance();
