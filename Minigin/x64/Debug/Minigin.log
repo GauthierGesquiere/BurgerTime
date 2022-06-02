@@ -1,5 +1,8 @@
 ﻿  Minigin.cpp
-  Minigin.vcxproj -> C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\x64\Debug\Minigin.exe
+  Renderer.cpp
+  ResourceManager.cpp
+  Generating Code...
+  Minigin.vcxproj -> C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\x64\Debug\Minigin.lib
   C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2\lib\x64\SDL2.dll
   1 File(s) copied
   C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libFLAC-8.dll

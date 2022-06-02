@@ -1,0 +1,51 @@
+﻿  MiniginPCH.cpp
+  AudioService.cpp
+  Command.cpp
+  Component.cpp
+  Event.cpp
+  EventListener.cpp
+  EventQueue.cpp
+  Font.cpp
+  GameObject.cpp
+  InputManager.cpp
+  KeyboardController.cpp
+  Main.cpp
+  Minigin.cpp
+  Observer.cpp
+  QuitCommand.cpp
+  Renderer.cpp
+  ResourceManager.cpp
+  Scene.cpp
+  SceneManager.cpp
+  SdlMixerAudioService.cpp
+  ServiceLocator.cpp
+  Compiling...
+  Subject.cpp
+  TestCommand.cpp
+  TextObject.cpp
+  Texture2D.cpp
+  Transform.cpp
+  XboxController.cpp
+  Minigin.vcxproj -> C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\x64\Release\Minigin.lib
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2\lib\x64\SDL2.dll
+  1 File(s) copied
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libFLAC-8.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libmodplug-1.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libmpg123-0.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libogg-0.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libopus-0.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libopusfile-0.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libvorbis-0.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\libvorbisfile-3.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_mixer\lib\x64\SDL2_mixer.dll
+  9 File(s) copied
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_image\lib\x64\libjpeg-9.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_image\lib\x64\libpng16-16.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_image\lib\x64\libtiff-5.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_image\lib\x64\libwebp-7.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_image\lib\x64\SDL2_image.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_image\lib\x64\zlib1.dll
+  6 File(s) copied
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_ttf\lib\x64\libfreetype-6.dll
+  C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2_ttf\lib\x64\SDL2_ttf.dll
+  2 File(s) copied

@@ -20,16 +20,22 @@ void dae::GameObject::Startup()
 	}
 }
 
-void dae::GameObject::Update()
+void dae::GameObject::Update(float deltaSec)
 {
+	if (m_IsMarkedForDeletion)
+		return;
+
 	for (Component* pElement : m_Components)
 	{
-		pElement->Update();
+		pElement->Update(deltaSec);
 	}
 }
 
 void dae::GameObject::Render() const
 {
+	if (m_IsMarkedForDeletion)
+		return;
+
 	for (const Component* pElement : m_Components)
 	{
 		pElement->Render();

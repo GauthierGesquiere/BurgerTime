@@ -19,7 +19,7 @@ namespace dae
 		void Remove(const GameObject* object);
 		void Remove(std::shared_ptr<GameObject>& object);
 
-		void Update();
+		void Update(float deltaSec);
 		void Render() const;
 
 		void DeleteRemovedObjects();

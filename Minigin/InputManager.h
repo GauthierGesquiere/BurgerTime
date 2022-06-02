@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <unordered_map>
 
 #include "Command.h"
@@ -30,7 +29,7 @@ namespace dae
 
 		bool ProcessInput();
 
-		void SetCommandToButton(unsigned int controllerIndex, XboxController::ControllerButton button, Command* command, InputState inputType);
+		void SetCommandToButton(unsigned int controllerIndex, ControllerButton button, Command* command, InputState inputType);
 		void SetCommandToKey(unsigned int controllerIndex, SDL_Keycode key, Command* command, InputState inputType);
 
 		void AddPLayer(unsigned int i = -1);
@@ -47,7 +46,7 @@ namespace dae
 
 		struct KeyInfo
 		{
-			KeyInfo(unsigned int i, XboxController::ControllerButton button)
+			KeyInfo(unsigned int i, ControllerButton button)
 			: PlayerControllerIndex{ i }
 			, Button{ button }
 			{
@@ -63,7 +62,7 @@ namespace dae
 			
 			unsigned int PlayerControllerIndex;
 
-			XboxController::ControllerButton Button{};
+			ControllerButton Button{};
 			SDL_Keycode Key{};
 
 			InputType type;

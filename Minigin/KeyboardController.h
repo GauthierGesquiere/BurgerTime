@@ -1,4 +1,7 @@
 #pragma once
+#include <memory>
+#include <SDL.h>
+
 namespace dae
 {
 	class KeyboardController final

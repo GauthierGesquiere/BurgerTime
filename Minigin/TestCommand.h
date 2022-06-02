@@ -7,8 +7,8 @@ namespace dae
 	{
 	public:
 		TestCommand() = default;
-		~TestCommand() = default;
-		void Execute();
+		~TestCommand() override = default;
+		void Execute() override;
 	};
 }
 

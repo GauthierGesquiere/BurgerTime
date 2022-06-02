@@ -7,7 +7,7 @@ void dae::Component::Startup()
 {
 }
 
-void dae::Component::Update()
+void dae::Component::Update(float /*deltaSec*/)
 {
 }
 

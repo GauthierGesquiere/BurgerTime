@@ -2,11 +2,11 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-void dae::SceneManager::Update(float /*deltaSec*/)
+void dae::SceneManager::Update(float deltaSec)
 {
 	for (auto& scene : m_Scenes)
 	{
-		scene->Update();
+		scene->Update(deltaSec);
 	}
 }
 
@@ -44,7 +44,14 @@ std::shared_ptr<dae::Scene> dae::SceneManager::GetScene(const std::string& name)
 
 std::shared_ptr<dae::Scene> dae::SceneManager::GetActiveScene() const
 {
-	return m_ActiveScene;
+	if (m_ActiveScene)
+	{
+		return m_ActiveScene;
+	}
+
+	std::cout << "No Active Scene" << std::endl;
+
+	return nullptr;
 }
 
 void dae::SceneManager::SetSceneAsActive(const std::string& name)

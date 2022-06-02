@@ -1,10 +1,17 @@
 #include "MiniginPCH.h"
 #include "InputManager.h"
+#include "Command.h"
 
 dae::InputManager::InputManager()
 {
 	m_pControllers.push_back(new XboxController(0));
 	m_pKeyboards.push_back(new KeyboardController(0));
+}
+
+dae::InputManager::InputManager(int controllerIndex)
+{
+	m_pControllers.push_back(new XboxController(controllerIndex));
+	m_pKeyboards.push_back(new KeyboardController(controllerIndex));
 }
 
 dae::InputManager::~InputManager()
@@ -75,7 +82,12 @@ bool dae::InputManager::ProcessInput()
 				break;
 			}
 
-			if (m_pControllers[i]->IsPressed(XboxController::ControllerButton::GAMEPAD_LEFT_SHOULDER))
+			if (m_pKeyboards[i]->IsPressed(SDLK_p))
+			{
+				return false;
+			}
+
+			if (m_pControllers[i]->IsPressed(ControllerButton::GAMEPAD_LEFT_SHOULDER))
 			{
 				return false;
 			}
@@ -84,7 +96,7 @@ bool dae::InputManager::ProcessInput()
 	return true;
 }
 
-void dae::InputManager::SetCommandToButton(unsigned int controllerIndex, XboxController::ControllerButton button, Command* command, InputState inputType)
+void dae::InputManager::SetCommandToButton(unsigned int controllerIndex, ControllerButton button, Command* command, InputState inputType)
 {
 	const KeyInfo keyInfo = { controllerIndex, button };
 	const CommandInfo commandInfo = { command, inputType };

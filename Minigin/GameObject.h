@@ -1,6 +1,6 @@
 #pragma once
-#include "Component.h"
 #include "Transform.h"
+#include <vector>
 
 namespace dae
 {
@@ -16,16 +16,19 @@ namespace dae
 		GameObject& operator=(GameObject&& other) = delete;
 
 		void Startup();
-		void Update();
+		void Update(float deltaSec);
 		void Render() const;
+
+		Transform& GetTransform() { return m_Transform; }
 
 		void MarkForDelete();
 		bool GetIsMarkedForDelete() const;
 
+
 		//Components
 		template<typename T>
-		std::enable_if_t<std::is_base_of_v<class Component, T>, T*>
-			AddComponent(T* pComp)
+		//std::enable_if_t<std::is_base_of_v<class Component, T>, T*>
+		void AddComponent(T* pComp)
 		{
 			const auto findItrResult = std::find_if(m_Components.begin(), m_Components.end(),
 				[pComp](Component* pComponent) { return pComponent == pComp; });
@@ -35,7 +38,6 @@ namespace dae
 				m_Components.push_back(pComp);
 				dynamic_cast<Component*>(pComp)->SetOwner(this);
 			}
-			return pComp;
 		}
 
 		template<typename T>

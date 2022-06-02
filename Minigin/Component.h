@@ -13,7 +13,7 @@ namespace dae
 		Component& operator=(Component&& other) = delete;
 
 		virtual void Startup();
-		virtual void Update();
+		virtual void Update(float deltaSec);
 		virtual void Render() const;
 
 		void SetOwner(GameObject* newOwner);

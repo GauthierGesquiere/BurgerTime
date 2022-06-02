@@ -13,7 +13,7 @@ namespace dae
 	{
 	public:
 		EventQueue() = default;
-		~EventQueue();
+		~EventQueue() override;
 		EventQueue(const EventQueue& other) = delete;
 		EventQueue(EventQueue&& other) = delete;
 		EventQueue& operator=(const EventQueue& other) = delete;
@@ -22,6 +22,7 @@ namespace dae
 		void Broadcast(Event* event); // is sent to all listeners
 
 		void Subscribe(const std::string& eventType, EventListener* pListener);
+
 		//For cleanup
 		void Unsubscribe(EventListener* pListener);
 		void Unsubscribe(const std::string& eventType, EventListener* pListener);

@@ -45,8 +45,8 @@ void dae::Minigin::Initialize()
 		"Programming 4 assignment",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		640,
-		480,
+		m_WindowWidth,
+		m_WindowHeight,
 		SDL_WINDOW_OPENGL
 	);
 	if (m_Window == nullptr) 
@@ -69,13 +69,18 @@ void dae::Minigin::Initialize()
 void dae::Minigin::LoadGame() const
 {
 	// input
-	auto& input = InputManager::GetInstance();
-	input.SetCommandToButton(0, XboxController::ControllerButton::GAMEPAD_A, new TestCommand(), InputManager::InputState::KeyDown);
-	input.SetCommandToKey(0, SDLK_q, new TestCommand(), InputManager::InputState::KeyDown);
+	if (m_pGame)
+	{
+		m_pGame->LoadGame();
+	}
 }
 
 void dae::Minigin::Cleanup()
 {
+	//Delete Game
+	delete m_pGame;
+	m_pGame = nullptr;
+
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(m_Window);
 	m_Window = nullptr;
@@ -124,8 +129,11 @@ void dae::Minigin::Run()
 			sceneManager.Update(deltaTime);
 
 			eventQueue.HandleEventQueue();
-			sceneManager.GetActiveScene()->DeleteRemovedObjects();
-			sceneManager.GetActiveScene()->AddObjects();
+			if (sceneManager.GetActiveScene())
+			{
+				sceneManager.GetActiveScene()->DeleteRemovedObjects();
+				sceneManager.GetActiveScene()->AddObjects();
+			}
 			renderer.Render();
 		}
 	}

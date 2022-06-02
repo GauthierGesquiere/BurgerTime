@@ -50,11 +50,11 @@ void Scene::Remove(std::shared_ptr<GameObject>&object)
 	object->MarkForDelete();
 }
 
-void Scene::Update()
+void Scene::Update(float deltaSec)
 {
 	for (auto& object : m_Objects)
 	{
-		object->Update();
+		object->Update(deltaSec);
 	}
 }
 
