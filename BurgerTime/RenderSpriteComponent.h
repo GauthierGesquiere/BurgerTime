@@ -6,6 +6,11 @@
 #include "Component.h"
 #include "Texture2D.h"
 
+#pragma warning(push)
+#pragma warning (disable:4201)
+#include <glm/glm.hpp>
+#pragma warning(pop)
+
 enum class LoopType
 {
 	Loop,
@@ -33,6 +38,8 @@ public:
 	                      float timeBetweenFrames, unsigned int displayWidth = 0, unsigned int displayHeight = 0,
 	                      LoopType loopType = LoopType::Loop, int freezeOnFrame = -1, bool mirror = false);
 	float GetTotalAmountOfTime() const { return static_cast<float>(m_Columns) * static_cast<float>(m_Rows) * m_TimeBetweenFrames; }
+	glm::vec2 GetSourceToDestRatio() const { return glm::vec2{ m_DestinationWidth / m_SourceRect.w, m_DestinationHeight / m_SourceRect.h }; }
+	glm::vec2 GetSize() const { return glm::vec2{ m_SourceRect.w * GetSourceToDestRatio().x, m_SourceRect.h * GetSourceToDestRatio().y }; }
 
 private:
 	std::shared_ptr<dae::Texture2D> m_pTexture{};

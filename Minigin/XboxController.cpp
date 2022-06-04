@@ -21,7 +21,7 @@ public:
 		ZeroMemory(&PreviousState, sizeof(XINPUT_STATE));
 		ZeroMemory(&CurrentState, sizeof(XINPUT_STATE));
 	}
-	void ProcessInput()
+	bool ProcessInput()
 	{
 		CopyMemory(&PreviousState, &CurrentState, sizeof(XINPUT_STATE));
 		ZeroMemory(&CurrentState, sizeof(XINPUT_STATE));
@@ -29,35 +29,37 @@ public:
 
 		auto buttonChanges = CurrentState.Gamepad.wButtons ^ PreviousState.Gamepad.wButtons;
 		ButtonsPressedThisFrame = buttonChanges & CurrentState.Gamepad.wButtons;
-		ButtonsReleasedThisFrame = buttonChanges & (~CurrentState.Gamepad.wButtons);
+		ButtonsReleasedThisFrame = buttonChanges & ~CurrentState.Gamepad.wButtons;
+
+		return true;
 	}
 
-	bool IsPressed(ControllerButton button) const { return CurrentState.Gamepad.wButtons & int(button); };
-	bool IsDown(ControllerButton button) const { return ButtonsPressedThisFrame & int(button); };
-	bool IsUp(ControllerButton button) const { return ButtonsReleasedThisFrame & int(button); };
+	bool IsHold(ControllerButton button) const { return CurrentState.Gamepad.wButtons & int(button); }
+	bool IsPressed(ControllerButton button) const { return ButtonsPressedThisFrame & int(button); }
+	bool IsReleased(ControllerButton button) const { return ButtonsReleasedThisFrame & int(button); }
 };
 
 
-void dae::XboxController::ProcessInput()
+bool dae::XboxController::ProcessInput()
 {
-	pImpl->ProcessInput();
+	return pImpl->ProcessInput();
+}
+
+bool dae::XboxController::IsHold(ControllerButton button) const
+{
+	return pImpl->IsHold(button);
 }
 
 bool dae::XboxController::IsPressed(ControllerButton button) const
 {
+	// todo: return whether the given button is pressed or not.
 	return pImpl->IsPressed(button);
 }
 
-bool dae::XboxController::IsDown(ControllerButton button) const
-{
-	// todo: return whether the given button is pressed or not.
-	return pImpl->IsDown(button);
-}
-
-bool dae::XboxController::IsUp(ControllerButton button) const
+bool dae::XboxController::IsReleased(ControllerButton button) const
 {
 	// todo: return whether the given button is pressed or not.	
-	return pImpl->IsUp(button);
+	return pImpl->IsReleased(button);
 }
 
 dae::XboxController::XboxController(unsigned int controllerIndex)

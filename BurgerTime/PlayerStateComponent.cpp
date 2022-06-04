@@ -7,13 +7,15 @@
 
 #include "GameObject.h"
 #include "RenderSpriteComponent.h"
+#include "WalkCommand.h"
 
-PlayerStateComponent::PlayerStateComponent(unsigned displayWidth, unsigned displayHeight)
-	: m_SourcePath{"BurgerTime/Mr.Pepper/"}
-	  , m_PlayerDims(16)
+PlayerStateComponent::PlayerStateComponent(unsigned displayWidth, unsigned displayHeight, unsigned int playerDims, glm::vec2 playerSize)
+	: m_PreviousPlayerState(PlayerState::Nothing)
+	  , m_SourcePath{"BurgerTime/Mr.Pepper/"}
+      , m_PlayerDims{ playerDims }
+	  , m_PlayerSize{ playerSize }
 	  , m_WindowWidth(displayWidth)
 	  , m_WindowHeight(displayHeight)
-	  , m_PreviousPlayerState(PlayerState::Nothing)
 {
 }
 
@@ -57,17 +59,17 @@ void PlayerStateComponent::IsWalking(float /*deltaSec*/)
 			m_PreviousPlayerState = m_CurrentPlayerState;
 			const std::string fullPath{ "SideWalk.png" };
 
-			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 0.5f, m_WindowWidth, m_WindowHeight, LoopType::ForwardReverseLoop, -1, m_Mirror);
+			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 0.5f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::ForwardReverseLoop, -1, m_Mirror);
 		}
 	}
 
-	if (ElapsedSec >= 10)
+	/*if (ElapsedSec >= 10)
 	{
 		ElapsedSec = 0.0f;
 
 		m_PreviousPlayerStateBeforeThrowwing = m_CurrentPlayerState;
 		m_CurrentPlayerState = PlayerState::Throwing;
-	}
+	}*/
 }
 
 void PlayerStateComponent::IsClimbing(float /*deltaSec*/)
@@ -80,7 +82,7 @@ void PlayerStateComponent::IsClimbing(float /*deltaSec*/)
 			m_PreviousPlayerState = m_CurrentPlayerState;
 			const std::string fullPath{ "ClimbingDown.png" };
 
-			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 0.5f, m_WindowWidth, m_WindowHeight, LoopType::ForwardReverseLoop);
+			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 0.5f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::ForwardReverseLoop);
 		}
 	}
 
@@ -111,7 +113,7 @@ void PlayerStateComponent::IsThrowing(float /*deltaSec*/)
 				m_FreezeOnFrame = 0;
 			}
 
-			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 1.0f, m_WindowWidth, m_WindowHeight, LoopType::NoLoop, m_FreezeOnFrame, m_Mirror);
+			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 1.0f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::NoLoop, m_FreezeOnFrame, m_Mirror);
 			m_PreviousPlayerState = m_CurrentPlayerState;
 		}
 
@@ -141,7 +143,7 @@ void PlayerStateComponent::IsDying(float /*deltaSec*/)
 			m_PreviousPlayerState = m_CurrentPlayerState;
 			const std::string fullPath{ "Death.png" };
 
-			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 1.f, m_WindowWidth, m_WindowHeight, LoopType::NoLoop);
+			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 1.f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::NoLoop);
 		}
 
 		if (ElapsedSec >= renderer->GetTotalAmountOfTime())
@@ -157,7 +159,8 @@ void PlayerStateComponent::IsDying(float /*deltaSec*/)
 
 void PlayerStateComponent::InitInput()
 {
-	auto& input = dae::InputManager::GetInstance();
-	input.SetCommandToButton(0, dae::ControllerButton::GAMEPAD_A, new dae::TestCommand(), dae::InputManager::InputState::KeyDown);
-	input.SetCommandToKey(0, SDLK_q, new dae::TestCommand(), dae::InputManager::InputState::KeyDown);
+	//auto& input = dae::InputManager::GetInstance();
+	//input.ssss(0, dae::ControllerButton::GAMEPAD_A, new dae::TestCommand(), dae::InputManager::InputState::Pressed);
+	//input.SetCommandToKey(0, SDLK_q, new dae::TestCommand(), dae::InputManager::InputState::Pressed);
+
 }

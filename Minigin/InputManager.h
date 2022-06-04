@@ -13,9 +13,9 @@ namespace dae
 	public:
 		enum class InputState
 		{
-			KeyPressed,
-			KeyUp,
-			KeyDown,
+			Hold,
+			Released,
+			Pressed,
 			Idle
 		};
 
@@ -46,14 +46,14 @@ namespace dae
 
 		struct KeyInfo
 		{
-			KeyInfo(unsigned int i, ControllerButton button)
+			KeyInfo(ControllerButton button, unsigned int i)
 			: PlayerControllerIndex{ i }
 			, Button{ button }
 			{
 				Key = 0;
 				type = InputType::XboxController;
 			}
-			KeyInfo(unsigned int i, SDL_Keycode key)
+			KeyInfo(SDL_Keycode key, unsigned int i)
 				: PlayerControllerIndex{ i }
 				, Key{ key }
 			{
@@ -62,8 +62,11 @@ namespace dae
 			
 			unsigned int PlayerControllerIndex;
 
-			ControllerButton Button{};
-			SDL_Keycode Key{};
+			union
+			{
+				ControllerButton Button;
+				SDL_Keycode Key;
+			};
 
 			InputType type;
 
@@ -76,7 +79,8 @@ namespace dae
 		{
 			CommandInfo(Command* pCommand, InputState inputType)
 				: pCommand{ pCommand }
-				, InputType{ inputType }{}
+				, InputType{ inputType }
+			{}
 
 			Command* pCommand;
 			InputState InputType;
@@ -89,7 +93,7 @@ namespace dae
 			}
 		};
 
-		std::unordered_map<KeyInfo, CommandInfo, KeyInfoHasher> m_Commands;
+		std::unordered_map<KeyInfo, CommandInfo, KeyInfoHasher> m_Commands{};
 	};
 
 }

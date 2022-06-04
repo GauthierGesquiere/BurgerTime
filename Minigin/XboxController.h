@@ -33,10 +33,10 @@ namespace dae
 		XboxController& operator=(XboxController&& other) = delete;
 		~XboxController();
 
-		void ProcessInput();
+		bool ProcessInput();
+		bool IsHold(ControllerButton button) const;
 		bool IsPressed(ControllerButton button) const;
-		bool IsDown(ControllerButton button) const;
-		bool IsUp(ControllerButton button) const;
+		bool IsReleased(ControllerButton button) const;
 
 	private:
 		class XboxControllerImpl;

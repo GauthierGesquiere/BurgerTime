@@ -1,5 +1,11 @@
 #pragma once
 #include <string>
+#include <vector>
+
+#pragma warning(push)
+#pragma warning (disable:4201)
+#include <glm/glm.hpp>
+#pragma warning(pop)
 
 #include "Component.h"
 
@@ -14,6 +20,7 @@ public:
 	LevelsComponent& operator=(LevelsComponent&& other) = delete;
 
 private:
+	void Startup() override;
 	void Update(float deltaSec) override;
 
 	void LoadLevel(unsigned int levelIndex);
@@ -35,5 +42,8 @@ private:
 
 	std::string m_SourcePath{};
 
+	std::vector<std::vector<glm::vec2>> m_LevelVertices{};
+
+	glm::vec2 m_SourceToDestRatio{};
 };
 

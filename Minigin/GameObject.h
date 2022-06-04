@@ -15,7 +15,6 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
-		void Startup();
 		void Update(float deltaSec);
 		void Render() const;
 
@@ -72,5 +71,6 @@ namespace dae
 		Transform m_Transform;
 		std::vector<Component*> m_Components{};
 		bool m_IsMarkedForDeletion = false;
+		bool m_IsFirstUpdate{ true };
 	};
 }

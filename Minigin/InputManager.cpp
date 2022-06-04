@@ -40,56 +40,50 @@ bool dae::InputManager::ProcessInput()
 	for (size_t i = 0; i < m_pControllers.size(); ++i)
 	{
 		//check input
+		if (!m_pKeyboards[i]->ProcessInput())
+		{
+			return false;
+		}
+
 		m_pControllers[i]->ProcessInput();
-		m_pKeyboards[i]->ProcessInput();
 
 		//For every command check what states it need, and then if check if its true, if so activate that command
 		for (const auto& command : m_Commands)
 		{
 			switch (command.second.InputType)
 			{
-			case InputState::KeyPressed:
+			case InputState::Hold:
+				if (m_pControllers[i]->IsHold(command.first.Button))
+				{
+					command.second.pCommand->Execute();
+				}
+				else if(m_pKeyboards[i]->IsHold(command.first.Key))
+				{
+					command.second.pCommand->Execute();
+				}
+				break;
+			case InputState::Released:
+				if (m_pControllers[i]->IsReleased(command.first.Button))
+				{
+					command.second.pCommand->Execute();
+				}
+				else if (m_pKeyboards[i]->IsReleased(command.first.Key))
+				{
+					command.second.pCommand->Execute();
+				}
+				break;
+			case InputState::Pressed:
 				if (m_pControllers[i]->IsPressed(command.first.Button))
 				{
 					command.second.pCommand->Execute();
 				}
-				else if(m_pKeyboards[i]->IsPressed(command.first.Key))
-				{
-					command.second.pCommand->Execute();
-				}
-				break;
-			case InputState::KeyUp:
-				if (m_pControllers[i]->IsUp(command.first.Button))
-				{
-					command.second.pCommand->Execute();
-				}
-				else if (m_pKeyboards[i]->IsUp(command.first.Key))
-				{
-					command.second.pCommand->Execute();
-				}
-				break;
-			case InputState::KeyDown:
-				if (m_pControllers[i]->IsDown(command.first.Button))
-				{
-					command.second.pCommand->Execute();
-				}
-				else if (m_pKeyboards[i]->IsDown(command.first.Key))
+				else if (m_pKeyboards[i]->IsPressed(command.first.Key))
 				{
 					command.second.pCommand->Execute();
 				}
 				break;
 			default:
 				break;
-			}
-
-			if (m_pKeyboards[i]->IsPressed(SDLK_p))
-			{
-				return false;
-			}
-
-			if (m_pControllers[i]->IsPressed(ControllerButton::GAMEPAD_LEFT_SHOULDER))
-			{
-				return false;
 			}
 		}
 	}
@@ -98,14 +92,14 @@ bool dae::InputManager::ProcessInput()
 
 void dae::InputManager::SetCommandToButton(unsigned int controllerIndex, ControllerButton button, Command* command, InputState inputType)
 {
-	const KeyInfo keyInfo = { controllerIndex, button };
+	const KeyInfo keyInfo = { button,  controllerIndex};
 	const CommandInfo commandInfo = { command, inputType };
 	m_Commands.insert({ keyInfo, commandInfo });
 }
 
 void dae::InputManager::SetCommandToKey(unsigned int controllerIndex, SDL_Keycode key, Command* command, InputState inputType)
 {
-	const KeyInfo keyInfo = { controllerIndex, key };
+	const KeyInfo keyInfo = { key , controllerIndex};
 	const CommandInfo commandInfo = { command, inputType };
 	m_Commands.insert({ keyInfo, commandInfo });
 }

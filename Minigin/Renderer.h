@@ -1,6 +1,13 @@
 #pragma once
 #include "Singleton.h"
 
+#include <SDL.h>
+
+#pragma warning(push)
+#pragma warning (disable:4201)
+#include <glm/glm.hpp>
+#pragma warning(pop)
+
 namespace dae
 {
 	class Texture2D;
@@ -19,6 +26,8 @@ namespace dae
 
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
 		void RenderTexture(const Texture2D& texture, const SDL_Rect& src, float x, float y, float width, float height, bool flip = false) const;
+		bool RenderPoint(const glm::vec2& point) const;
+
 
 		SDL_Renderer* GetSDLRenderer() const { return m_Renderer; }
 

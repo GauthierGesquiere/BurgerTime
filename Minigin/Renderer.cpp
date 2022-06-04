@@ -72,3 +72,8 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const SDL_Rect& src,
 		SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst);
 	}
 }
+
+bool dae::Renderer::RenderPoint(const glm::vec2& point) const
+{
+	return SDL_RenderDrawPointF(GetSDLRenderer(), point.x, point.y);
+}

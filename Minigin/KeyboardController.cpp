@@ -8,12 +8,6 @@
 class dae::KeyboardController::KeyboardControllerImpl
 {
 private:
-	std::vector<SDL_Keycode> m_FirstPressedKeys;
-	//std::vector<SDL_Keycode> m_SecondPressedKeys;
-	//Switch between the first and second pressed keys,
-	//so you can check if the key is released, or is down
-	//bool m_FirstKeysIsCurrent = false;
-
 	SDL_Keycode m_PreviousKey{};
 	SDL_Keycode m_CurrentKey{};
 
@@ -32,40 +26,12 @@ public:
 		: m_ControllerIndex{ controllerIndex }
 	{
 		SDL_PollEvent(&e);
-		/*auto RunPollEventLoop = [this]()
-		{
-			SDL_Event e;
-			while (this) 
-			{
-				m_PreviousKey = m_CurrentKey;
-				m_CurrentKey = NULL;
-
-				while (SDL_PollEvent(&e))
-				{
-					if (e.type == SDL_KEYDOWN)
-					{
-						m_CurrentKey = e.key.keysym.sym;
-					}
-					if (e.type == SDL_KEYUP)
-					{
-						m_CurrentKey = e.key.keysym.sym;
-					}
-				}
-
-				const auto buttonChanges = m_CurrentKey ^ m_PreviousKey;
-				ButtonsPressedThisFrame = buttonChanges & static_cast<WORD>(m_CurrentKey);
-				ButtonsReleasedThisFrame = buttonChanges & ~(static_cast<WORD>(m_CurrentKey));
-			}
-		};*/
-
-		//std::thread KeyboardInput(RunPollEventLoop);
-		//KeyboardInput.detach();
 
 		m_PreviousKey = NULL;
 		m_CurrentKey = NULL;
 	}
 
-	void ProcessInput()
+	bool ProcessInput()
 	{
 		m_PreviousKey = m_CurrentKey;
 
@@ -79,48 +45,66 @@ public:
 			{
 				m_CurrentKey = NULL;
 			}
+			if (e.type == SDL_QUIT) 
+			{
+				return false;
+			}
 		}
 
-		const auto buttonChanges = m_CurrentKey ^ m_PreviousKey;
+		const auto buttonChanges = static_cast<WORD>(m_CurrentKey) ^ static_cast<WORD>(m_PreviousKey);
 		ButtonsPressedThisFrame = buttonChanges & static_cast<WORD>(m_CurrentKey);
-		ButtonsReleasedThisFrame = buttonChanges & ~(static_cast<WORD>(m_CurrentKey));
+		ButtonsReleasedThisFrame = buttonChanges & ~static_cast<WORD>(m_CurrentKey);
+		
+		return true;
 	}
 
+	bool IsHold(SDL_Keycode key)const
+	{
+		if (static_cast<WORD>(m_CurrentKey) == int(key) && m_CurrentKey != 0)
+		{
+			return true;
+		}
+		return false;
+
+	}
 	bool IsPressed(SDL_Keycode key) const
 	{
-		return static_cast<WORD>(m_CurrentKey) & int(key);
-	};
-	bool IsDown(SDL_Keycode key) const
+		if (ButtonsPressedThisFrame == int(key) && ButtonsPressedThisFrame != 0)
+		{
+			return true;
+		}
+		return false;
+	}
+	bool IsReleased(SDL_Keycode key) const
 	{
-		return ButtonsPressedThisFrame & int(key);
-	};
-	bool IsUp(SDL_Keycode key) const
-	{
-		return ButtonsReleasedThisFrame & int(key);
+		if (ButtonsReleasedThisFrame == int(key) && ButtonsReleasedThisFrame != 0)
+		{
+			return true;
+		}
+		return false;
 	}
 };
 
-
-void dae::KeyboardController::ProcessInput()
+bool dae::KeyboardController::ProcessInput()
 {
-	pImpl->ProcessInput();
+	return pImpl->ProcessInput();
+}
+
+bool dae::KeyboardController::IsHold(SDL_Keycode key) const
+{
+	return pImpl->IsHold(key);
 }
 
 bool dae::KeyboardController::IsPressed(SDL_Keycode key) const
 {
+	// todo: return whether the given button is pressed or not.
 	return pImpl->IsPressed(key);
 }
 
-bool dae::KeyboardController::IsDown(SDL_Keycode key) const
-{
-	// todo: return whether the given button is pressed or not.
-	return pImpl->IsDown(key);
-}
-
-bool dae::KeyboardController::IsUp(SDL_Keycode key) const
+bool dae::KeyboardController::IsReleased(SDL_Keycode key) const
 {
 	// todo: return whether the given button is pressed or not.	
-	return pImpl->IsUp(key);
+	return pImpl->IsReleased(key);
 }
 
 dae::KeyboardController::KeyboardController(unsigned int controllerIndex)

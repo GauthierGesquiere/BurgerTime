@@ -12,18 +12,19 @@ dae::GameObject::~GameObject()
 	}
 }
 
-void dae::GameObject::Startup()
-{
-	for (Component* pElement : m_Components)
-	{
-		pElement->Startup();
-	}
-}
-
 void dae::GameObject::Update(float deltaSec)
 {
 	if (m_IsMarkedForDeletion)
 		return;
+
+	if (m_IsFirstUpdate)
+	{
+		for (const auto& object : m_Components)
+		{
+			object->Startup();
+		}
+		m_IsFirstUpdate = false;
+	}
 
 	for (Component* pElement : m_Components)
 	{

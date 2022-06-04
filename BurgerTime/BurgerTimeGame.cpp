@@ -3,11 +3,12 @@
 #include <SDL_keycode.h>
 
 #include "GameObject.h"
-//#include "InputManager.h"
+#include "InputManager.h"
 #include "LevelsComponent.h"
 #include "Scene.h"
 #include "SceneManager.h"
-//#include "TestCommand.h"
+#include "TestCommand.h"
+#include "WalkCommand.h"
 
 BurgerTimeGame::BurgerTimeGame(unsigned int width, unsigned int height)
 {
@@ -34,6 +35,9 @@ void BurgerTimeGame::LoadGame()
 void BurgerTimeGame::InitInput()
 {
 	//auto& input = dae::InputManager::GetInstance();
-	//input.SetCommandToButton(0, dae::XboxController::ControllerButton::GAMEPAD_A, new dae::TestCommand(), dae::InputManager::InputState::KeyDown);
+	//input.SetCommandToButton(0, dae::ControllerButton::GAMEPAD_A, new dae::TestCommand(), dae::InputManager::InputState::Pressed);
 	//input.SetCommandToKey(0, SDLK_q, new dae::TestCommand(), dae::InputManager::InputState::KeyDown);
+	//input.SetCommandToKey(0, SDLK_w, new dae::TestCommand(), dae::InputManager::InputState::Pressed);
+	//input.SetCommandToKey(0, SDLK_q, new dae::TestCommand(), dae::InputManager::InputState::Released);
+	//input.SetCommandToKey(0, SDLK_s, new dae::TestCommand(), dae::InputManager::InputState::Hold);
 }

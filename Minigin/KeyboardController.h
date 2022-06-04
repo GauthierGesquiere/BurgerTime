@@ -15,10 +15,10 @@ namespace dae
 		KeyboardController& operator=(KeyboardController&& other) = delete;
 		~KeyboardController();
 
-		void ProcessInput();
+		bool ProcessInput();
+		bool IsHold(SDL_Keycode key) const;
 		bool IsPressed(SDL_Keycode key) const;
-		bool IsDown(SDL_Keycode key) const;
-		bool IsUp(SDL_Keycode key) const;
+		bool IsReleased(SDL_Keycode key) const;
 
 	private:
 		class KeyboardControllerImpl;

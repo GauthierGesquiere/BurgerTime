@@ -16,6 +16,9 @@
     <Filter Include="Components">
       <UniqueIdentifier>{1dfe8ab8-5473-4869-947e-5b60ec2dfe09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Commands">
+      <UniqueIdentifier>{e61d73f8-6392-4b25-8747-d07e3927076a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BurgerTime.cpp">
@@ -27,11 +30,17 @@
     <ClCompile Include="LevelsComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerStateComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
     <ClCompile Include="RenderSpriteComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerControllerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerStateComponent.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="WalkCommand.cpp">
+      <Filter>Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,10 +51,16 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="RenderSpriteComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="PlayerStateComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerControllerComponent.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WalkCommand.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

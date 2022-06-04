@@ -162,12 +162,16 @@
     <ClCompile Include="BurgerTime.cpp" />
     <ClCompile Include="BurgerTimeGame.cpp" />
     <ClCompile Include="LevelsComponent.cpp" />
+    <ClCompile Include="WalkCommand.cpp" />
+    <ClCompile Include="PlayerControllerComponent.cpp" />
     <ClCompile Include="PlayerStateComponent.cpp" />
     <ClCompile Include="RenderSpriteComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BurgerTimeGame.h" />
     <ClInclude Include="LevelsComponent.h" />
+    <ClInclude Include="WalkCommand.h" />
+    <ClInclude Include="PlayerControllerComponent.h" />
     <ClInclude Include="PlayerStateComponent.h" />
     <ClInclude Include="RenderSpriteComponent.h" />
   </ItemGroup>

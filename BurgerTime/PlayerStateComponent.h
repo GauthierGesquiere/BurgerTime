@@ -1,6 +1,11 @@
 #pragma once
 #include <string>
 
+#pragma warning(push)
+#pragma warning (disable:4201)
+#include <glm/glm.hpp>
+#pragma warning(pop)
+
 #include "Component.h"
 
 enum class PlayerState
@@ -16,7 +21,7 @@ enum class PlayerState
 class PlayerStateComponent : public dae::Component
 {
 public:
-	PlayerStateComponent(unsigned int displayWidth, unsigned int displayHeight);
+	PlayerStateComponent(unsigned int displayWidth, unsigned int displayHeight, unsigned int playerDims, glm::vec2 playerSize);
 	~PlayerStateComponent() override = default;
 	PlayerStateComponent(const PlayerStateComponent& other) = delete;
 	PlayerStateComponent(PlayerStateComponent&& other) = delete;
@@ -33,6 +38,7 @@ private:
 
 	std::string m_SourcePath{};
 
+	glm::vec2 m_PlayerSize{};
 	unsigned int m_PlayerDims{};
 
 	unsigned int m_WindowWidth;
