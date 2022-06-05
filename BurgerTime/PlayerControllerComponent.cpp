@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "EventQueue.h"
 #include "GameObject.h"
 #include "InputManager.h"
 #include "PlayerStateComponent.h"
@@ -11,17 +12,24 @@
 #include "ThrowCommand.h"
 
 PlayerControllerComponent::PlayerControllerComponent(std::vector<std::vector<glm::vec2>>* pLevelIndices, unsigned int playerDims, glm::vec2 playerSize)
-	: m_pLevelIndices{ pLevelIndices }
-	, m_Gravity{0, 9}
-	, m_Velocity{0, 0}
-	, m_PlayerSize{ playerSize }
-	, m_PlayerDims{playerDims}
-	, m_MovementSpeed{ 50 }
+	: ControllerComponent(pLevelIndices, playerDims, playerSize)
 {
+	dae::EventQueue::GetInstance().Subscribe("KilledPlayer", this);
+
+}
+
+PlayerControllerComponent::~PlayerControllerComponent()
+{
+	 dae::InputManager::GetInstance().RemoveCommands();
 }
 
 void PlayerControllerComponent::UpdateMovement(MoveDirections dir)
 {
+	if (m_IsDead)
+	{
+		return;
+	}
+
 	switch (dir)
 	{
 	case MoveDirections::Left:
@@ -44,6 +52,16 @@ void PlayerControllerComponent::ThrowSalt() const
 	Notify(*m_pOwner, new dae::Event("Throw"));
 }
 
+bool PlayerControllerComponent::OnEvent(const dae::Event* event)
+{
+	if (event->Message == "KilledPlayer")
+	{
+		m_IsDead = true;
+		dae::EventQueue::GetInstance().Unsubscribe("KilledPlayer", this);
+	}
+	return false;
+}
+
 void PlayerControllerComponent::Startup()
 {
 	AddInput();
@@ -58,23 +76,15 @@ void PlayerControllerComponent::Update(float deltaSec)
 	{
 		m_Velocity.y = 0.0f;
 	}
-	
+
+
+
 	//std::cout << m_HitLadder << std::endl;
 
 	HitLadder();
 	HitEdge();
 	TranslateSprite(deltaSec);
 	UpdateReset();
-}
-
-void PlayerControllerComponent::UpdateGravity(float deltaTime)
-{
-	m_Velocity += m_Gravity * deltaTime;
-}
-
-void PlayerControllerComponent::TranslateSprite(float deltaTime) const
-{ 
-	m_pOwner->GetTransform().MoveWith(glm::vec3{ m_Velocity.x * deltaTime, m_Velocity.y * deltaTime, 0 });
 }
 
 void PlayerControllerComponent::UpdateLeft()
@@ -122,312 +132,6 @@ void PlayerControllerComponent::UpdateReset()
 
 	m_Velocity.x = 0.0f;
 	m_Velocity.y = 0.0f;
-
-}
-
-bool PlayerControllerComponent::HitFloor()
-{
-	utils::HitInfo hitInfo{};
-	utils::Rectf box = CalculateBox();
-
-	const glm::vec2 startP{ box.left + box.width / 2, box.bottom - 2};
-	const glm::vec2 endP{ box.left + box.width / 2, box.bottom + 2};
-
-	/*
- *		+--------+
- *		|        |
- *		|        |
- *		|        |
- *		|    |   |
- *		|    |   |
- *		+----+---+
- *		     |
- */
-
-	for (const auto& levelIndices : *m_pLevelIndices)
-	{
-		if (Raycast(levelIndices, startP, endP, hitInfo))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-bool PlayerControllerComponent::HitEdge()
-{
-	if (m_Velocity.x == 0.0f )
-	{
-		return false;
-	}
-
-	bool hitEdge = false;
-
-	utils::HitInfo hitInfo{};
-	utils::Rectf box = CalculateBox();
-
-	glm::vec2 startP{ box.left + box.width / 2, box.bottom - 5 };
-	glm::vec2 endP;
-
-	if (m_Velocity.x > 0)
-	{
-	/*		Right
-	 *		+--------+
-	 *		|        |
-	 *		|        |
-	 *		|        |
-	 *		|        |
-	 *		|     ---+-
-	 *		+--------+
-	 */
-
-		//IsWalkingRight
-		endP = glm::vec2{ box.left + box.width + 1, box.bottom - 5 };
-	}
-	else if (m_Velocity.x < 0) 
-	{
-		/*		Left
-		 *		+--------+
-		 *		|        |
-		 *		|        |
-		 *		|        |
-		 *		|        |
-		 *	   -+---     |
-		 *		+--------+
-		 */
-
-		//IsWalkingLeft
-		endP = glm::vec2{ box.left - 1, box.bottom - 5 };
-	}
-
-	for (const auto& levelIndices : *m_pLevelIndices)
-	{
-		if (Raycast(levelIndices, startP, endP, hitInfo))
-		{
-			hitEdge = true;
-		}
-	}
-
-	//HitEdge but still need to do other check
-	if (hitEdge)
-	{
-		hitEdge = false;
-		startP = { box.left + box.width / 2, box.bottom - box.height + 10 };
-		if (m_Velocity.x > 0)
-		{
-			/*		Right
-			 *		+--------+
-			 *		|     ---+-
-			 *		|        |
-			 *		|        |
-			 *		|        |
-			 *		|        |
-			 *		+--------+
-			 */
-
-			 //IsWalkingRight
-			endP = { box.left + box.width + 1, box.bottom - box.height + 10 };
-		}
-		else
-		{
-			/*		Left
-			 *		+--------+
-			 *	   -+---     |
-			 *		|        |
-			 *		|        |
-			 *		|        |
-			 *		|        |
-			 *		+--------+
-			 */
-
-			//IsWalkingLeft
-			endP = { box.left - 1, box.bottom - box.height + 10 };
-		}
-
-		for (const auto& levelIndices : *m_pLevelIndices)
-		{
-			if (Raycast(levelIndices, startP, endP, hitInfo))
-			{
-				hitEdge = true;
-			}
-		}
-
-		if (hitEdge)
-		{
-			startP = { box.left + box.width / 2, box.bottom - box.height / 2 };
-			if (m_Velocity.x > 0)
-			{
-				/*		Right
-				 *		+--------+
-				 *		|        |
-				 *		|        |
-				 *		|     ---+-
-				 *		|        |
-				 *		|        |
-				 *		+--------+
-				 */
-
-				 //IsWalkingRight
-				endP = { box.left + box.width + 1, box.bottom - box.height / 2 };
-			}
-			else
-			{
-				/*		Left
-				 *		+--------+
-				 *		|        |
-				 *		|        |
-				 *	   -+---     |
-				 *		|        |
-				 *		|        |
-				 *		+--------+
-				 */
-
-				 //IsWalkingLeft
-				endP = { box.left - 1, box.bottom - box.height / 2 };
-			}
-
-			for (const auto& levelIndices : *m_pLevelIndices)
-			{
-				if (Raycast(levelIndices, startP, endP, hitInfo))
-				{
-					hitEdge = false;
-				}
-			}
-
-			if (hitEdge)
-			{
-				m_Velocity.x = 0.0f;
-			}
-		}
-	}
-
-	return hitEdge;
-}
-
-bool PlayerControllerComponent::HitLadder()
-{
-	bool hitLadder = false;
-	m_HitLadder = false;
-
-	utils::HitInfo hitInfo{};
-	utils::Rectf box = CalculateBox();
-
-	glm::vec2 startP{ box.left + box.width / 2 - 10, box.bottom - 3 };
-	glm::vec2 endP{ box.left + box.width / 2 + 10, box.bottom - 3 };
-
-	/*
-	 *		+--------+
-	 *		|        |
-	 *		|        |
-	 *		|        |
-	 *		|        |
-	 *		| ------ |
-	 *		+--------+
-	 */
-
-
-	for (const auto& levelIndices : *m_pLevelIndices)
-	{
-		if (Raycast(levelIndices, startP, endP, hitInfo))
-		{
-			hitLadder = true;
-		}
-	}
-
-	//HitEdge but still need to do other check
-	if (hitLadder)
-	{
-		startP = { box.left + box.width / 2 - 10, box.bottom - box.height +    5 };
-		endP = { box.left + box.width / 2 + 10, box.bottom - box.height + 5 };
-
-		/*
-		 *		+--------+
-		 *		| ------ |
-		 *		|        |
-		 *		|        |
-		 *		|        |
-		 *		|        |
-		 *		+--------+
-		 */
-
-		for (const auto& levelIndices : *m_pLevelIndices)
-		{
-			if (Raycast(levelIndices, startP, endP, hitInfo))
-			{
-				hitLadder = false;
-			}
-		}
-
-		if (hitLadder)
-		{
-			//Can go only Down
-			//std::cout << "Can Go Only Down" << std::endl;
-			m_HitLadder = true;
-			if (HitFloor())
-			{
-				m_LadderState = LadderState::Down;
-			}
-		}
-		else
-		{
-			//Can go Up and Down
-			//std::cout << "Can Go Up, Down" << std::endl;
-			m_HitLadder = true;
-			m_LadderState = LadderState::UpDown;
-		}
-	}
-	else
-	{
-		startP = { box.left + box.width / 2 - 10, box.bottom - box.height + 5 };
-		endP = { box.left + box.width / 2 + 10, box.bottom - box.height + 5 };
-
-		/*
-		 *		+--------+
-		 *		| ------ |
-		 *		|        |
-		 *		|        |
-		 *		|        |
-		 *		|        |
-		 *		+--------+
-		 */
-
-		for (const auto& levelIndices : *m_pLevelIndices)
-		{
-			if (Raycast(levelIndices, startP, endP, hitInfo))
-			{
-				hitLadder = true;
-			}
-		}
-
-		if (hitLadder)
-		{
-			//Can go only Up
-			//std::cout << "Can Go Only Up" << std::endl;
-			m_HitLadder = true;
-			if (HitFloor())
-			{
-				m_LadderState = LadderState::Up;
-			}
-		}
-		else
-		{
-			//m_LadderState = LadderState::NoLadder;
-			//m_HitLadder = false;
-		}
-	}
-
-	return hitLadder;
-}
-
-const utils::Rectf PlayerControllerComponent::CalculateBox() const
-{
-	utils::Rectf box;
-	const glm::vec2 topLeft = m_pOwner->GetTransform().GetPosition();
-	box.left = topLeft.x;
-	box.bottom = topLeft.y + m_PlayerDims * m_PlayerSize.y;
-	box.width = m_PlayerDims * m_PlayerSize.x;
-	box.height = m_PlayerDims * m_PlayerSize.y;
-	return box;
 }
 
 void PlayerControllerComponent::AddInput()

@@ -2,25 +2,18 @@
 
 #include <iostream>
 
+#include "EventQueue.h"
 #include "InputManager.h"
-#include "TestCommand.h"
-
-#include <SDL_keycode.h>
 
 #include "GameObject.h"
 #include "RenderSpriteComponent.h"
-#include "MoveCommand.h"
 
 PlayerStateComponent::PlayerStateComponent(unsigned displayWidth, unsigned displayHeight, unsigned int playerDims, glm::vec2 playerSize)
-	: m_CurrentPlayerState(PlayerState::Idle)
-	  , m_PreviousPlayerState(PlayerState::Nothing)
-	  , m_PreviousPlayerStateBeforeThrowwing{PlayerState::Nothing}
-	  , m_PreviousPlayerStateBeforeIdle{PlayerState::Nothing}
-	  , m_SourcePath{"BurgerTime/Mr.Pepper/"}
-	  , m_PlayerSize{playerSize}
-	  , m_PlayerDims{playerDims}
-	  , m_WindowWidth(displayWidth)
-	  , m_WindowHeight(displayHeight)
+	: StateComponent(displayWidth, displayHeight, playerDims, playerSize)
+{
+}
+
+PlayerStateComponent::~PlayerStateComponent()
 {
 }
 
@@ -33,104 +26,127 @@ void PlayerStateComponent::Startup()
 		renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 0.5f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::ForwardReverseLoop, -1, m_Mirror);
 		renderer->SetFreeze(2);
 	}
+
+	dae::EventQueue::GetInstance().Subscribe("KilledPlayer", this);
 }
 
 void PlayerStateComponent::Update(float deltaSec)
 {
-	switch (m_CurrentPlayerState)
+	switch (m_CurrentState)
 	{
-	case PlayerState::Walking:
+	case State::Walking:
 		IsWalking(deltaSec);
 		break;
-	case PlayerState::Climbing:
+	case State::Climbing:
 		IsClimbing(deltaSec);
 		break;
-	case PlayerState::Throwing:
+	case State::Throwing:
 		IsThrowing(deltaSec);
 		break;
-	case PlayerState::Winning:
+	case State::Winning:
 		IsWinning(deltaSec);
 		break;
-	case PlayerState::Idle:
+	case State::Idle:
 		IsIdle(deltaSec);
 		break;
-	case PlayerState::Dying:
+	case State::Dying:
 		IsDying(deltaSec);
+		break;
+	case State::Nothing: 
+		break;
+	default: 
 		break;
 	}
 }
 
 void PlayerStateComponent::OnNotify(const dae::GameObject& /*actor*/, dae::Event* event)
 {
-	//m_PreviousPlayerStateBeforeThrowwing = m_CurrentPlayerState;
-	//m_CurrentPlayerState = PlayerState::Idle;
+	if (m_IsDead)
+	{
+		delete event;
+		return;
+	}
 
 	if (event->Message == "IsWalkingLeft")
 	{
-		m_CurrentPlayerState = PlayerState::Walking;
+		m_CurrentState = State::Walking;
 
 		//Was walking to the Right?
 		if (m_Mirror == true)
 		{
 			//ResetState
-			m_PreviousPlayerState = PlayerState::Nothing;
+			m_PreviousState = State::Nothing;
 		}
 		m_Mirror = false;
 	}
 	else if (event->Message == "IsWalkingRight")
 	{
-		m_CurrentPlayerState = PlayerState::Walking;
+		m_CurrentState = State::Walking;
 
 		//Was walking to the Left?
 		if ((m_Mirror == false))
 		{
 			//ResetState
-			m_PreviousPlayerState = PlayerState::Nothing;
+			m_PreviousState = State::Nothing;
 		}
 		m_Mirror = true;
 	}
 	else if (event->Message == "IsClimbingDown")
 	{
-		m_CurrentPlayerState = PlayerState::Climbing;
+		m_CurrentState = State::Climbing;
 
 		//Was ClimbingUp?
 		if (m_ClimbingUp == true)
 		{
 			//ResetState
-			m_PreviousPlayerState = PlayerState::Nothing;
+			m_PreviousState = State::Nothing;
 		}
 		m_ClimbingUp = false;
 	}
 	else if (event->Message == "IsClimbingUp")
 	{
-		m_CurrentPlayerState = PlayerState::Climbing;
+		m_CurrentState = State::Climbing;
 
 		//Was ClimbingDown?
 		if ((m_ClimbingUp == false))
 		{
 			//ResetState
-			m_PreviousPlayerState = PlayerState::Nothing;
+			m_PreviousState = State::Nothing;
 		}
 		m_ClimbingUp = true;
 	}
-	else if(event->Message == "IsIdle" && m_CurrentPlayerState != PlayerState::Throwing)
+	else if(event->Message == "IsIdle" && m_CurrentState != State::Throwing)
 	{
-		if (m_CurrentPlayerState != PlayerState::Idle)
+		if (m_CurrentState != State::Idle)
 		{
 			//std::cout << "Idle" << std::endl;
-			m_PreviousPlayerStateBeforeIdle = m_CurrentPlayerState;
-			m_CurrentPlayerState = PlayerState::Idle;
+			m_PreviousStateBeforeIdle = m_CurrentState;
+			m_CurrentState = State::Idle;
 		}
 	}
 
 	if (event->Message == "Throw")
 	{
-		m_PreviousPlayerStateBeforeThrowwing = m_CurrentPlayerState;
-		m_CurrentPlayerState = PlayerState::Throwing;
+		m_PreviousStateBeforeThrowwing = m_CurrentState;
+		m_CurrentState = State::Throwing;
 	}
 
 	//Important
 	delete event;
+}
+
+bool PlayerStateComponent::OnEvent(const dae::Event* event)
+{
+	if (event->Message == "KilledPlayer")
+	{
+		ElapsedSec = 0.0f;
+		std::cout << "test" << std::endl;
+		m_CurrentState = State::Dying;
+		m_IsDead = true;
+		dae::EventQueue::GetInstance().Unsubscribe("KilledPlayer", this);
+	}
+
+	return false;
 }
 
 void PlayerStateComponent::IsWalking(float /*deltaSec*/)
@@ -138,22 +154,14 @@ void PlayerStateComponent::IsWalking(float /*deltaSec*/)
 	//if encountered ladder and pressed up/down then is climbing
 	if (const auto renderer = m_pOwner->GetComponentOfType<RenderSpriteComponent>())
 	{
-		if (m_PreviousPlayerState != m_CurrentPlayerState)
+		if (m_PreviousState != m_CurrentState)
 		{
-			m_PreviousPlayerState = m_CurrentPlayerState;
+			m_PreviousState = m_CurrentState;
 			const std::string fullPath{ "SideWalk.png" };
 
 			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 0.5f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::ForwardReverseLoop, -1, m_Mirror);
 		}
 	}
-
-	/*if (ElapsedSec >= 10)
-	{
-		ElapsedSec = 0.0f;
-
-		m_PreviousPlayerStateBeforeThrowwing = m_CurrentPlayerState;
-		m_CurrentPlayerState = PlayerState::Throwing;
-	}*/
 }
 
 void PlayerStateComponent::IsClimbing(float /*deltaSec*/)
@@ -161,9 +169,9 @@ void PlayerStateComponent::IsClimbing(float /*deltaSec*/)
 	//if entered ground and pressed left/right then is walking
 	if (const auto renderer = m_pOwner->GetComponentOfType<RenderSpriteComponent>())
 	{
-		if (m_PreviousPlayerState != m_CurrentPlayerState)
+		if (m_PreviousState != m_CurrentState)
 		{
-			m_PreviousPlayerState = m_CurrentPlayerState;
+			m_PreviousState = m_CurrentState;
 
 			std::string fullPath;
 			if (m_ClimbingUp)
@@ -187,17 +195,17 @@ void PlayerStateComponent::IsThrowing(float deltaSec)
 	//wait 0.1f then back to previous state
 	if (const auto renderer = m_pOwner->GetComponentOfType<RenderSpriteComponent>())
 	{
-		if (m_PreviousPlayerState != m_CurrentPlayerState)
+		if (m_PreviousState != m_CurrentState)
 		{
 			const std::string fullPath{ "ThrowPepper.png" };
 
-			if (m_PreviousPlayerState == PlayerState::Idle)
+			if (m_PreviousState == State::Idle)
 			{
-				if (m_PreviousPlayerStateBeforeIdle == PlayerState::Walking)
+				if (m_PreviousStateBeforeIdle == State::Walking)
 				{
 					m_FreezeOnFrame = 1;
 				}
-				else if (m_PreviousPlayerStateBeforeIdle == PlayerState::Climbing)
+				else if (m_PreviousStateBeforeIdle == State::Climbing)
 				{
 					if (m_ClimbingUp)
 					{
@@ -211,14 +219,14 @@ void PlayerStateComponent::IsThrowing(float deltaSec)
 			}
 
 			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 0.8f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::NoLoop, m_FreezeOnFrame, m_Mirror);
-			m_PreviousPlayerState = m_CurrentPlayerState;
+			m_PreviousState = m_CurrentState;
 		}
 
 		if (ElapsedSec >= renderer->GetTotalAmountOfTime())
 		{
 			ElapsedSec = 0.0f;
 
-			m_CurrentPlayerState = m_PreviousPlayerStateBeforeThrowwing;
+			m_CurrentState = m_PreviousStateBeforeThrowwing;
 		}
 	}
 
@@ -229,24 +237,25 @@ void PlayerStateComponent::IsWinning(float /*deltaSec*/)
 	//next level
 }
 
-void PlayerStateComponent::IsDying(float /*deltaSec*/)
+void PlayerStateComponent::IsDying(float deltaSec)
 {
+	ElapsedSec += deltaSec;
+
 	//restart level
 	if (const auto renderer = m_pOwner->GetComponentOfType<RenderSpriteComponent>())
 	{
-		if (m_PreviousPlayerState != m_CurrentPlayerState)
+		if (m_PreviousState != m_CurrentState)
 		{
-			m_PreviousPlayerState = m_CurrentPlayerState;
+			m_PreviousState = m_CurrentState;
 			const std::string fullPath{ "Death.png" };
 
-			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 1.f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::NoLoop);
+			renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 0.3f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::NoLoop);
 		}
 
 		if (ElapsedSec >= renderer->GetTotalAmountOfTime())
 		{
 			ElapsedSec = 0.0f;
-
-			m_CurrentPlayerState = m_PreviousPlayerState;
+			dae::EventQueue::GetInstance().Broadcast(new dae::Event("RestartLevel"));
 		}
 	}
 
@@ -258,11 +267,11 @@ void PlayerStateComponent::IsIdle(float /*deltaSec*/)
 	//wait 0.1f then back to previous state
 	if (const auto renderer = m_pOwner->GetComponentOfType<RenderSpriteComponent>())
 	{
-		if (m_PreviousPlayerState != m_CurrentPlayerState)
+		if (m_PreviousState != m_CurrentState)
 		{
 			const std::string fullPath{ "Idle.png" };
 
-			if (m_PreviousPlayerState == PlayerState::Climbing)
+			if (m_PreviousState == State::Climbing)
 			{
 				renderer->SetFreeze();
 			}
@@ -270,15 +279,7 @@ void PlayerStateComponent::IsIdle(float /*deltaSec*/)
 			{
 				renderer->SetTextureToDraw(m_SourcePath + fullPath, m_PlayerDims, m_PlayerDims, 1.0f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::NoLoop);
 			}
-			m_PreviousPlayerState = m_CurrentPlayerState;
-
+			m_PreviousState = m_CurrentState;
 		}
 	}
-}
-void PlayerStateComponent::InitInput()
-{
-	//auto& input = dae::InputManager::GetInstance();
-	//input.ssss(0, dae::ControllerButton::GAMEPAD_A, new dae::TestCommand(), dae::InputManager::InputState::Pressed);
-	//input.SetCommandToKey(0, SDLK_q, new dae::TestCommand(), dae::InputManager::InputState::Pressed);
-
 }

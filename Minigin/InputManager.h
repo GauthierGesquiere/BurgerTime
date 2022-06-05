@@ -31,6 +31,8 @@ namespace dae
 
 		void SetCommandToButton(unsigned int controllerIndex, ControllerButton button, Command* command, InputState inputType);
 		void SetCommandToKey(unsigned int controllerIndex, SDL_Keycode key, Command* command, InputState inputType);
+		void RemoveCommand(Command* command);
+		void RemoveCommands();
 
 		void AddPLayer(unsigned int i = -1);
 

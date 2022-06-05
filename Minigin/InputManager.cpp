@@ -21,18 +21,21 @@ dae::InputManager::~InputManager()
 		delete controller;
 		controller = nullptr;
 	}
+	m_pControllers.clear();
 
 	for (auto& keyboard : m_pKeyboards)
 	{
 		delete keyboard;
 		keyboard = nullptr;
 	}
+	m_pKeyboards.clear();
 
 	for (auto& command : m_Commands)
 	{
 		delete command.second.pCommand;
 		command.second.pCommand = nullptr;
 	}
+	m_Commands.clear();
 }
 
 bool dae::InputManager::ProcessInput()
@@ -102,6 +105,31 @@ void dae::InputManager::SetCommandToKey(unsigned int controllerIndex, SDL_Keycod
 	const KeyInfo keyInfo = { key , controllerIndex};
 	const CommandInfo commandInfo = { command, inputType };
 	m_Commands.insert({ keyInfo, commandInfo });
+}
+
+void dae::InputManager::RemoveCommand(Command* command)
+{
+	for (auto element : m_Commands)
+	{
+		if (element.second.pCommand == command)
+		{
+			delete element.second.pCommand;
+		}
+	}
+}
+
+void dae::InputManager::RemoveCommands()
+{
+	if (!m_Commands.empty())
+	{
+		for (auto& command : m_Commands)
+		{
+			delete command.second.pCommand;
+			command.second.pCommand = nullptr;
+		}
+
+		m_Commands.clear();
+	}
 }
 
 void dae::InputManager::AddPLayer(unsigned int /*i*/)

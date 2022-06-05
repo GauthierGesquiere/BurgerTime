@@ -1,30 +1,21 @@
-﻿  MiniginPCH.cpp
-  AudioService.cpp
-  Command.cpp
-  Component.cpp
+﻿  Component.cpp
   Event.cpp
   EventListener.cpp
   EventQueue.cpp
-  Font.cpp
+  Game.cpp
   GameObject.cpp
   InputManager.cpp
   KeyboardController.cpp
-  Main.cpp
   Minigin.cpp
   Observer.cpp
-  QuitCommand.cpp
   Renderer.cpp
   ResourceManager.cpp
   Scene.cpp
   SceneManager.cpp
-  SdlMixerAudioService.cpp
-  ServiceLocator.cpp
-  Compiling...
   Subject.cpp
   TestCommand.cpp
-  TextObject.cpp
-  Texture2D.cpp
   Transform.cpp
+  utils.cpp
   XboxController.cpp
   Minigin.vcxproj -> C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\x64\Release\Minigin.lib
   C:\Users\Gautjekski\Desktop\Programming_4\BurgerTime\3rdParty\SDL2\lib\x64\SDL2.dll

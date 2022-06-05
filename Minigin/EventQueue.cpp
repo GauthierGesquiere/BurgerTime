@@ -5,6 +5,7 @@
 
 dae::EventQueue::~EventQueue()
 {
+
 }
 
 void dae::EventQueue::Broadcast(Event* event)
@@ -36,15 +37,6 @@ void dae::EventQueue::Subscribe(const std::string& eventType, EventListener* pLi
 	}
 }
 
-void dae::EventQueue::Unsubscribe(EventListener* pListener)
-{
-	//unsibscribe all events for this listener
-	for (auto& pair : m_Listeners)
-	{
-		Unsubscribe(pair.first, pListener);
-	}
-}
-
 void dae::EventQueue::Unsubscribe(const std::string& eventType, EventListener* pListener)
 {
 	//Look if event has listeners
@@ -69,14 +61,13 @@ void dae::EventQueue::HandleEventQueue()
 	while (!m_EventQue.empty())
 	{
 		const auto& pEvent = m_EventQue.front();
+		m_EventQue.pop();
 
-		//Nothing overwrite this yet so it gives error
-		//for (EventListener* listener : m_Listeners[pEvent->Message])
-		//{
-		//	listener->OnEvent(*pEvent);
-		//}
+		for (EventListener* listener : m_Listeners[pEvent->Message])
+		{
+			listener->OnEvent(pEvent);
+		}
 
 		delete pEvent;
-		m_EventQue.pop();
 	}
 }

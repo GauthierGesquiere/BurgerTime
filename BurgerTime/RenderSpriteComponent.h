@@ -22,6 +22,7 @@ class RenderSpriteComponent : public dae::Component
 {
 public:
 	RenderSpriteComponent() = default;
+	RenderSpriteComponent(glm::vec2 pos);
 	RenderSpriteComponent(const std::string& path, unsigned int frameWidth, unsigned int frameHeight, unsigned int displayWidth = 0, unsigned int displayHeight = 0, LoopType loopType = LoopType::Loop, bool mirror = false, float timeBetweenFrames = 0.0f);
 	~RenderSpriteComponent() override = default;
 	RenderSpriteComponent(const RenderSpriteComponent& other) = delete;
@@ -33,6 +34,7 @@ public:
 	void Update(float deltaSec) override;
 	void Render() const override;
 
+	void SetPosition(glm::vec2 pos);
 	void SetFreeze(int frame = -1);
 	void SetFrame(unsigned int frame);
 	void SetTextureToDraw(const std::string& path, unsigned int frameWidth, unsigned int frameHeight,
@@ -67,6 +69,9 @@ private:
 	bool m_IsInitialized{ false };
 
 	int m_FreezeOnFrame{};
+
+	bool m_UseLockedPosition{};
+	glm::vec2 m_LockedPosition{};
 
 	bool HasReachedLastFrame(unsigned int frame) const;
 	static bool HasReachedFirstFrame(unsigned int frame);

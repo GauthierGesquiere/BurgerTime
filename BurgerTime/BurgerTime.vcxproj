@@ -161,20 +161,34 @@
   <ItemGroup>
     <ClCompile Include="BurgerTime.cpp" />
     <ClCompile Include="BurgerTimeGame.cpp" />
+    <ClCompile Include="ControllerComponent.cpp" />
+    <ClCompile Include="DataComponent.cpp" />
+    <ClCompile Include="EnemyControllerComponent.cpp" />
+    <ClCompile Include="EnemyStateComponent.cpp" />
+    <ClCompile Include="LevelDataComponent.cpp" />
     <ClCompile Include="LevelsComponent.cpp" />
     <ClCompile Include="MoveCommand.cpp" />
     <ClCompile Include="PlayerControllerComponent.cpp" />
+    <ClCompile Include="PlayerDataComponent.cpp" />
     <ClCompile Include="PlayerStateComponent.cpp" />
     <ClCompile Include="RenderSpriteComponent.cpp" />
+    <ClCompile Include="StateComponent.cpp" />
     <ClCompile Include="ThrowCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BurgerTimeGame.h" />
+    <ClInclude Include="ControllerComponent.h" />
+    <ClInclude Include="DataComponent.h" />
+    <ClInclude Include="EnemyControllerComponent.h" />
+    <ClInclude Include="EnemyStateComponent.h" />
+    <ClInclude Include="LevelDataComponent.h" />
     <ClInclude Include="LevelsComponent.h" />
     <ClInclude Include="MoveCommand.h" />
     <ClInclude Include="PlayerControllerComponent.h" />
+    <ClInclude Include="PlayerDataComponent.h" />
     <ClInclude Include="PlayerStateComponent.h" />
     <ClInclude Include="RenderSpriteComponent.h" />
+    <ClInclude Include="StateComponent.h" />
     <ClInclude Include="ThrowCommand.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

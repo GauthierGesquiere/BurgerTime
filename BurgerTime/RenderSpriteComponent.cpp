@@ -7,6 +7,12 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+RenderSpriteComponent::RenderSpriteComponent(glm::vec2 pos)
+	: m_UseLockedPosition{true}
+	  , m_LockedPosition{pos}
+{
+}
+
 RenderSpriteComponent::RenderSpriteComponent(const std::string& path, unsigned int frameWidth, unsigned int frameHeight, unsigned int displayWidth, unsigned int displayHeight, LoopType loopType, bool mirror, float timeBetweenFrames)
 	: m_IsInitialized{ true }
 {
@@ -52,8 +58,20 @@ void RenderSpriteComponent::Render() const
 	{
 		return;
 	}
+	if (m_UseLockedPosition)
+	{
+		dae::Renderer::GetInstance().RenderTexture(*m_pTexture, m_SourceRect, m_LockedPosition.x, m_LockedPosition.y, static_cast<float>(m_DestinationWidth), static_cast<float>(m_DestinationHeight), m_MirrorSourceTexture);
+	}
+	else
+	{
+		dae::Renderer::GetInstance().RenderTexture(*m_pTexture, m_SourceRect, m_pOwner->GetTransform().GetPosition().x, m_pOwner->GetTransform().GetPosition().y, static_cast<float>(m_DestinationWidth), static_cast<float>(m_DestinationHeight), m_MirrorSourceTexture);
+	}
+}
 
-	dae::Renderer::GetInstance().RenderTexture(*m_pTexture, m_SourceRect, m_pOwner->GetTransform().GetPosition().x, m_pOwner->GetTransform().GetPosition().y, static_cast<float>(m_DestinationWidth), static_cast<float>(m_DestinationHeight), m_MirrorSourceTexture);
+void RenderSpriteComponent::SetPosition(glm::vec2 pos)
+{
+	m_UseLockedPosition = true;
+	m_LockedPosition = pos;
 }
 
 void RenderSpriteComponent::SetFreeze(int frame)

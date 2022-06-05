@@ -1,30 +1,18 @@
 #pragma once
-#include <string>
-
 #pragma warning(push)
 #pragma warning (disable:4201)
 #include <glm/glm.hpp>
 #pragma warning(pop)
 
-#include "Component.h"
+#include "EventListener.h"
 #include "Observer.h"
+#include "StateComponent.h"
 
-enum class PlayerState
-{
-	Walking,
-	Climbing,
-	Throwing,
-	Winning,
-	Dying,
-	Idle,
-	Nothing
-};
-
-class PlayerStateComponent : public dae::Component, public dae::Observer
+class PlayerStateComponent : public StateComponent, public dae::Observer, public dae::EventListener
 {
 public:
 	PlayerStateComponent(unsigned int displayWidth, unsigned int displayHeight, unsigned int playerDims, glm::vec2 playerSize);
-	~PlayerStateComponent() override = default;
+	~PlayerStateComponent() override;
 	PlayerStateComponent(const PlayerStateComponent& other) = delete;
 	PlayerStateComponent(PlayerStateComponent&& other) = delete;
 	PlayerStateComponent& operator=(const PlayerStateComponent& other) = delete;
@@ -34,27 +22,9 @@ public:
 	void Update(float deltaSec) override;
 
 	void OnNotify(const dae::GameObject& actor, dae::Event* event) override;
+	bool OnEvent(const dae::Event* event) override; 
 
 private:
-	PlayerState m_CurrentPlayerState{};
-	PlayerState m_PreviousPlayerState{};
-	PlayerState m_PreviousPlayerStateBeforeThrowwing{};
-	PlayerState m_PreviousPlayerStateBeforeIdle{};
-
-	std::string m_SourcePath{};
-
-	glm::vec2 m_PlayerSize{};
-	unsigned int m_PlayerDims{};
-
-	unsigned int m_WindowWidth;
-	unsigned int m_WindowHeight{};
-
-	bool m_ClimbingUp{};
-	bool m_Mirror{ false };
-	float ElapsedSec{};
-
-	int m_FreezeOnFrame{};
-
 	void IsWalking(float deltaSec);
 	void IsClimbing(float deltaSec);
 	void IsThrowing(float deltaSec);
@@ -62,8 +32,7 @@ private:
 	void IsDying(float deltaSec);
 	void IsIdle(float deltaSec);
 
-	void InitInput();
-
+	bool m_IsDead{};
 };
 
 

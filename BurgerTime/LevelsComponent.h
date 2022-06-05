@@ -7,17 +7,22 @@
 #include <glm/glm.hpp>
 #pragma warning(pop)
 
-#include "Component.h"
+#include <memory>
 
-class LevelsComponent : public dae::Component
+#include "Component.h"
+#include "EventListener.h"
+
+class LevelsComponent : public dae::Component, public dae::EventListener
 {
 public:
 	LevelsComponent(unsigned int width, unsigned int height, unsigned int level = 1);
-	~LevelsComponent() override = default;
+	~LevelsComponent() override;
 	LevelsComponent(const LevelsComponent& other) = delete;
 	LevelsComponent(LevelsComponent&& other) = delete;
 	LevelsComponent& operator=(const LevelsComponent& other) = delete;
 	LevelsComponent& operator=(LevelsComponent&& other) = delete;
+
+	bool OnEvent(const dae::Event* event) override;
 
 private:
 	void Startup() override;
@@ -25,6 +30,8 @@ private:
 
 	void LoadLevel(unsigned int levelIndex);
 	void CreatePlayers(unsigned int amount);
+	void CreateEnemy();
+	void LoadData();
 
 	//Dimensions
 	unsigned int m_LevelWidth{ 208 };
@@ -45,5 +52,17 @@ private:
 	std::vector<std::vector<glm::vec2>> m_LevelVertices{};
 
 	glm::vec2 m_SourceToDestRatio{};
+
+	std::shared_ptr<dae::GameObject> m_pPlayer{};
+	std::vector<std::shared_ptr<dae::GameObject>> m_pEnemies{};
+
+	bool m_NeedsRestart{};
+	bool m_GameOver{};
+
+	float m_ElapsedSec{};
+	float m_ElapsedSecEnemy{};
+	bool m_LevelIsReset{};
+
+	int m_AmountOfEnemies{};
 };
 

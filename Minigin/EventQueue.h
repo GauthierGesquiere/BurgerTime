@@ -23,7 +23,6 @@ namespace dae
 		void Subscribe(const std::string& eventType, EventListener* pListener);
 
 		//For cleanup
-		void Unsubscribe(EventListener* pListener);
 		void Unsubscribe(const std::string& eventType, EventListener* pListener);
 
 		void HandleEventQueue();
