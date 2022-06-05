@@ -1,5 +1,6 @@
 #pragma once
 #include "Event.h"
+#include "EventQueue.h"
 
 namespace dae
 {
@@ -15,5 +16,10 @@ namespace dae
 
 		virtual bool OnEvent(const Event& event) = 0;
 	};
+
+	inline dae::EventListener::~EventListener()
+	{
+		dae::EventQueue::GetInstance().Unsubscribe(this);
+	}
 }
 

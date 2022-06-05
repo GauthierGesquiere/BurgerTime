@@ -7,6 +7,7 @@
 #pragma warning(pop)
 
 #include "Component.h"
+#include "Observer.h"
 
 enum class PlayerState
 {
@@ -15,10 +16,11 @@ enum class PlayerState
 	Throwing,
 	Winning,
 	Dying,
+	Idle,
 	Nothing
 };
 
-class PlayerStateComponent : public dae::Component
+class PlayerStateComponent : public dae::Component, public dae::Observer
 {
 public:
 	PlayerStateComponent(unsigned int displayWidth, unsigned int displayHeight, unsigned int playerDims, glm::vec2 playerSize);
@@ -31,10 +33,13 @@ public:
 	void Startup() override;
 	void Update(float deltaSec) override;
 
+	void OnNotify(const dae::GameObject& actor, dae::Event* event) override;
+
 private:
 	PlayerState m_CurrentPlayerState{};
 	PlayerState m_PreviousPlayerState{};
 	PlayerState m_PreviousPlayerStateBeforeThrowwing{};
+	PlayerState m_PreviousPlayerStateBeforeIdle{};
 
 	std::string m_SourcePath{};
 
@@ -44,6 +49,7 @@ private:
 	unsigned int m_WindowWidth;
 	unsigned int m_WindowHeight{};
 
+	bool m_ClimbingUp{};
 	bool m_Mirror{ false };
 	float ElapsedSec{};
 
@@ -54,10 +60,13 @@ private:
 	void IsThrowing(float deltaSec);
 	void IsWinning(float deltaSec);
 	void IsDying(float deltaSec);
+	void IsIdle(float deltaSec);
 
 	void InitInput();
 
 };
+
+
 
 
 

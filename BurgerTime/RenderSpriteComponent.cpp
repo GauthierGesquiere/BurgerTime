@@ -56,6 +56,18 @@ void RenderSpriteComponent::Render() const
 	dae::Renderer::GetInstance().RenderTexture(*m_pTexture, m_SourceRect, m_pOwner->GetTransform().GetPosition().x, m_pOwner->GetTransform().GetPosition().y, static_cast<float>(m_DestinationWidth), static_cast<float>(m_DestinationHeight), m_MirrorSourceTexture);
 }
 
+void RenderSpriteComponent::SetFreeze(int frame)
+{
+	if (frame == -1)
+	{
+		m_FreezeOnFrame = m_CurrentFrame;
+	}
+	else
+	{
+		m_FreezeOnFrame = -1;
+	}
+}
+
 void RenderSpriteComponent::SetFrame(unsigned frame)
 {
 	const unsigned int frameRow = frame / m_Columns;

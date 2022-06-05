@@ -72,7 +72,7 @@ namespace dae
 
 			bool operator==(const KeyInfo& other) const
 			{
-				return PlayerControllerIndex == other.PlayerControllerIndex && Button == other.Button;
+				return PlayerControllerIndex == other.PlayerControllerIndex && (Button == other.Button || Key == other.Key);
 			}
 		};
 		struct CommandInfo

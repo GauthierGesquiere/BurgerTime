@@ -1,6 +1,8 @@
 #include "MiniginPCH.h"
 #include "EventQueue.h"
 
+#include "EventListener.h"
+
 dae::EventQueue::~EventQueue()
 {
 }
@@ -30,7 +32,7 @@ void dae::EventQueue::Subscribe(const std::string& eventType, EventListener* pLi
 	else
 	{
 		//if not add it
-		m_Listeners[eventType] = std::vector<EventListener*>{ pListener };
+		m_Listeners[eventType] = std::vector{ pListener };
 	}
 }
 
@@ -66,8 +68,9 @@ void dae::EventQueue::HandleEventQueue()
 {
 	while (!m_EventQue.empty())
 	{
-		auto& pEvent = m_EventQue.front();
+		const auto& pEvent = m_EventQue.front();
 
+		//Nothing overwrite this yet so it gives error
 		//for (EventListener* listener : m_Listeners[pEvent->Message])
 		//{
 		//	listener->OnEvent(*pEvent);

@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 namespace dae
 {
 	//Workaround for template
@@ -24,11 +26,20 @@ namespace dae
 		, pDataType{ new EventData<T>(dataType) }
 		{}
 
+		explicit Event(std::string message)
+			: Message{ message }
+		{}
+		~Event();
+		Event(Event& other) = delete;
+		Event(Event&& other) = delete;
+		Event operator=(Event& other) = delete;
+		Event operator=(Event&& other) = delete;
+
 		//Use this if you want to get the dataType, not the Data* member variable.
 		template<typename T>
 		const T& GetData() const
 		{
-			return static_cast<EventData<TAPE_ERASE>*>(pDataType)->DataType;
+			return static_cast<EventData<T>*>(pDataType)->DataType;
 		}
 
 		std::string Message{};

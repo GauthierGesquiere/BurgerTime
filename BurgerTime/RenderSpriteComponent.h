@@ -33,6 +33,7 @@ public:
 	void Update(float deltaSec) override;
 	void Render() const override;
 
+	void SetFreeze(int frame = -1);
 	void SetFrame(unsigned int frame);
 	void SetTextureToDraw(const std::string& path, unsigned int frameWidth, unsigned int frameHeight,
 	                      float timeBetweenFrames, unsigned int displayWidth = 0, unsigned int displayHeight = 0,

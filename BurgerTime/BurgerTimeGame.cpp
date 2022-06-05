@@ -8,7 +8,7 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "TestCommand.h"
-#include "WalkCommand.h"
+#include "MoveCommand.h"
 
 BurgerTimeGame::BurgerTimeGame(unsigned int width, unsigned int height)
 {

@@ -1,14 +1,13 @@
 #pragma once
-#include <map>
+#include "Singleton.h"
 #include <queue>
 #include <unordered_map>
-
 #include "Event.h"
-#include "EventListener.h"
-#include "Singleton.h"
+//#include <vector>
 
 namespace dae
 {
+	class EventListener;
 	class EventQueue final : public Singleton<EventQueue>
 	{
 	public:
@@ -19,7 +18,7 @@ namespace dae
 		EventQueue& operator=(const EventQueue& other) = delete;
 		EventQueue& operator=(EventQueue&& other) = delete;
 
-		void Broadcast(Event* event); // is sent to all listeners
+		void Broadcast(Event* event);
 
 		void Subscribe(const std::string& eventType, EventListener* pListener);
 

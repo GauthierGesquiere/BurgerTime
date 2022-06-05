@@ -35,6 +35,8 @@ public:
 	{
 		m_PreviousKey = m_CurrentKey;
 
+		//const uint8_t* keyboardState = SDL_GetKeyboardState(NULL);
+
 		while (SDL_PollEvent(&e))
 		{
 			if (e.type == SDL_KEYDOWN)

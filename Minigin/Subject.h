@@ -17,12 +17,11 @@ namespace dae
 			const auto Idx = std::remove(m_pObservers.begin(), m_pObservers.end(), pObserver);
 		}
 
-	protected:
-		void Notify(const GameObject& actor, Event event) const
+		void Notify(const GameObject& actor, Event* event) const
 		{
 			for (const auto& observer : m_pObservers)
 			{
-				observer->Notify(actor, event);
+				observer->OnNotify(actor, event);
 			}
 		}
 

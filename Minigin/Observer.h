@@ -7,7 +7,7 @@ namespace dae
 	class Observer
 	{
 	public:
-		virtual ~Observer() = default;
-		virtual void Notify(const GameObject& actor, Event event) = 0;
+		virtual ~Observer();
+		virtual void OnNotify(const GameObject& actor, Event* event) = 0;
 	};
 }
