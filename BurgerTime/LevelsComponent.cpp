@@ -20,7 +20,8 @@
 LevelsComponent::LevelsComponent(unsigned int width, unsigned int height, unsigned int level)
 	: m_level{level}
 	, m_SourcePath{"BurgerTime/"}
-	, m_GameOver{ false }
+	, m_MaxAmountOfEnemies{ 5 }
+	, m_BurgersInitialized{ true }
 {
 	m_WindowWidth = width;
 	m_WindowHeight = height;
@@ -56,7 +57,6 @@ void LevelsComponent::Startup()
 {
 	Component::Startup();
 
-
 	dae::EventQueue::GetInstance().Subscribe("RestartLevel", this);
 	dae::EventQueue::GetInstance().Subscribe("GameOver", this);
 	dae::EventQueue::GetInstance().Subscribe("FinishedBurger", this);
@@ -68,6 +68,29 @@ void LevelsComponent::Update(float deltaSec)
 	{
 		//Go to next level
 		
+	}
+
+	if (m_EnemiesInitialized != static_cast<int>(m_pEnemies.size()))
+	{
+		m_EnemiesInitialized = 0;
+		m_pEnemyTransforms.clear();
+		for (const auto& enemy : m_pEnemies)
+		{
+			if (enemy->GetComponentOfType<EnemyControllerComponent>()->m_IsInitialized)
+			{
+				m_pEnemyTransforms.push_back(&enemy->GetTransform());
+				m_EnemiesInitialized++;
+				m_BurgersInitialized = false;
+			}
+		}		
+	}
+	else if (!m_BurgersInitialized)
+	{
+		for (const auto& burger : m_pBurgers)
+		{
+			burger->GetComponentOfType<BurgerComponent>()->SetAllEnemies(m_pEnemies);
+		}
+		m_BurgersInitialized = true;
 	}
 
 	if (m_NeedsRestart || m_GameOver)
@@ -87,7 +110,7 @@ void LevelsComponent::Update(float deltaSec)
 			dae::SceneManager::GetInstance().GetActiveScene()->Remove(m_pPlayer);
 
 			CreatePlayers(1);
-			//CreateEnemy();
+			CreateEnemy();
 
 			m_LevelIsReset = true;
 			dae::EventQueue::GetInstance().Broadcast(new dae::Event("LevelIsReset"));
@@ -106,13 +129,16 @@ void LevelsComponent::Update(float deltaSec)
 	m_AmountOfEnemies = static_cast<int>(m_pEnemies.size());
 	if (!m_GameOver)
 	{
-		if (m_AmountOfEnemies < 3)
+		if (m_AmountOfEnemies < m_MaxAmountOfEnemies)
 		{
-			m_ElapsedSecEnemy += deltaSec;
-			if (m_ElapsedSecEnemy > 1)
+			if (rand() % 5 >= 2)
+			{
+				m_ElapsedSecEnemy += deltaSec;
+			}
+			if (m_ElapsedSecEnemy > 4)
 			{
 				m_ElapsedSecEnemy = 0.0f;
-				//CreateEnemy();
+				CreateEnemy();
 				for (const auto& enemy : m_pEnemies)
 				{
 					enemy->GetComponentOfType<EnemyControllerComponent>()->SetPlayerTransform(&m_pPlayer->GetTransform());
@@ -170,8 +196,45 @@ void LevelsComponent::CreateEnemy()
 {
 	const auto gObject = std::make_shared<dae::GameObject>();
 	gObject->AddComponent(new RenderSpriteComponent());
-	gObject->AddComponent(new EnemyStateComponent(m_WindowWidth, m_WindowHeight, m_PlayerDims, m_SourceToDestRatio, EnemyType::Mr_HotDog));
-	gObject->AddComponent(new EnemyControllerComponent(&m_LevelVertices, m_PlayerDims, m_SourceToDestRatio));
+	int randInt = rand() % 10;
+
+	EnemyType type;
+	if (randInt > 5)
+	{
+		type = EnemyType::Mr_HotDog;
+	}
+	else if (randInt > 2)
+	{
+		type = EnemyType::Mr_Egg;
+	}
+	else
+	{
+		type = EnemyType::Mr_Pickle;
+	}
+		//type = EnemyType::Mr_Egg;
+
+	gObject->AddComponent(new EnemyStateComponent(m_WindowWidth, m_WindowHeight, m_PlayerDims, m_SourceToDestRatio, type));
+
+	glm::vec2 spawnPoint{};
+	randInt = rand() % 10;
+	if (randInt > 6 || type == EnemyType::Mr_Egg)
+	{
+		spawnPoint = { 20, 423 };
+	}
+	else if (randInt > 4)
+	{
+		spawnPoint = { 570, 423 };
+	}
+	else if (randInt > 1)
+	{
+		spawnPoint = { 0, -10.f };
+	}
+	else if (randInt == 1)
+	{
+		spawnPoint = { 580, -10.f };
+	}
+	//spawnPoint = { 0, -10.f };
+	gObject->AddComponent(new EnemyControllerComponent(&m_LevelVertices, m_PlayerDims, m_SourceToDestRatio, spawnPoint));
 	dae::SceneManager::GetInstance().GetActiveScene()->Add(gObject);
 	m_pEnemies.push_back(gObject);
 }
@@ -187,7 +250,22 @@ void LevelsComponent::LoadData()
 void LevelsComponent::MakeBurger(int level)
 {
 	const auto gObject = std::make_shared<dae::GameObject>();
-	gObject->AddComponent(new BurgerComponent(level, 3, m_SourceToDestRatio, &m_LevelVertices));
+	gObject->AddComponent(new BurgerComponent(level, 1, m_SourceToDestRatio, &m_LevelVertices));
 	dae::SceneManager::GetInstance().GetActiveScene()->Add(gObject);
 	m_pBurgers.push_back(gObject);
+
+	const auto gObject1 = std::make_shared<dae::GameObject>();
+	gObject1->AddComponent(new BurgerComponent(level, 2, m_SourceToDestRatio, &m_LevelVertices));
+	dae::SceneManager::GetInstance().GetActiveScene()->Add(gObject1);
+	m_pBurgers.push_back(gObject1);
+
+	const auto gObject2 = std::make_shared<dae::GameObject>();
+	gObject2->AddComponent(new BurgerComponent(level, 3, m_SourceToDestRatio, &m_LevelVertices));
+	dae::SceneManager::GetInstance().GetActiveScene()->Add(gObject2);
+	m_pBurgers.push_back(gObject2);
+
+	const auto gObject3 = std::make_shared<dae::GameObject>();
+	gObject3->AddComponent(new BurgerComponent(level, 4, m_SourceToDestRatio, &m_LevelVertices));
+	dae::SceneManager::GetInstance().GetActiveScene()->Add(gObject3);
+	m_pBurgers.push_back(gObject3);
 }

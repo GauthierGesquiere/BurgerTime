@@ -140,7 +140,6 @@ bool PlayerStateComponent::OnEvent(const dae::Event* event)
 	if (event->Message == "KilledPlayer")
 	{
 		ElapsedSec = 0.0f;
-		std::cout << "test" << std::endl;
 		m_CurrentState = State::Dying;
 		m_IsDead = true;
 		dae::EventQueue::GetInstance().Unsubscribe("KilledPlayer", this);

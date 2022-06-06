@@ -20,7 +20,7 @@
 class EnemyControllerComponent : public ControllerComponent, public dae::Subject
 {
 public:
-	EnemyControllerComponent(std::vector<std::vector<glm::vec2>>* pLevelIndices, unsigned int enemyDims, glm::vec2 enemySize);
+	EnemyControllerComponent(std::vector<std::vector<glm::vec2>>* pLevelIndices, unsigned int enemyDims, glm::vec2 enemySize, glm::vec2 spawnPoint);
 	~EnemyControllerComponent() override = default;
 	EnemyControllerComponent(const EnemyControllerComponent& other) = delete;
 	EnemyControllerComponent(EnemyControllerComponent&& other) = delete;
@@ -28,6 +28,8 @@ public:
 	EnemyControllerComponent& operator=(EnemyControllerComponent&& other) = delete;
 
 	void SetPlayerTransform(dae::Transform* playerTransform);
+
+	bool m_IsInitialized{};
 
 private:
 	void Startup() override;
@@ -65,7 +67,7 @@ private:
 	NeedUpdate m_NeedsUpdateVertical{};
 	NeedUpdate m_PreviousUpdateVertical{};
 
-
+	glm::vec2 m_SpawnPoint{};
 };
 
 

@@ -11,6 +11,7 @@
 
 #include "Component.h"
 #include "EventListener.h"
+#include "Transform.h"
 
 class LevelsComponent : public dae::Component, public dae::EventListener
 {
@@ -66,7 +67,12 @@ private:
 	bool m_LevelIsReset{};
 
 	int m_AmountOfEnemies{};
+	int m_MaxAmountOfEnemies{};
 
 	int m_BurgersFinished{};
+
+	int m_EnemiesInitialized{};
+	bool m_BurgersInitialized{};
+	std::vector <dae::Transform*> m_pEnemyTransforms{};
 };
 

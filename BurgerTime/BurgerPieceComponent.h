@@ -35,6 +35,7 @@ public:
 	void SetPlayerTransform(dae::Transform* pPlayerTransform);
 	void UpdateGravity(float deltaSec);
 	bool CheckPieceAbove(BurgerPieceComponent* other);
+	void CheckIfHitEnemy(std::vector<std::shared_ptr<dae::GameObject>>& pEnemies);
 
 	bool m_IsInitialized{};
 
@@ -62,6 +63,8 @@ private:
 	bool m_HasRightSide{};
 	bool m_HasLeftSide{};
 	bool m_HasMid{};
+
+	bool m_IsFalling{};
 
 	bool m_PieceFellOn{};
 	bool m_NeedsToStack{};

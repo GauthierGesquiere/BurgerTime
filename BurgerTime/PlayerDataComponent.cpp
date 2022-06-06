@@ -49,7 +49,7 @@ bool PlayerDataComponent::OnEvent(const dae::Event* event)
 {
 	if (event->Message == "KilledPlayer" && m_GameIsReset)
 	{
-		std::cout << m_PlayerLives << std::endl;
+		//std::cout << m_PlayerLives << std::endl;
 		m_GameIsReset = false;
 		m_PlayerLives--;
 

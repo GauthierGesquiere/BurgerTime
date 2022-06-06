@@ -23,9 +23,11 @@ public:
 	void Update(float deltaSec) override;
 
 	void SetPlayerTransform(dae::Transform* pPlayerTransform);
+	void SetAllEnemies(std::vector<std::shared_ptr<dae::GameObject>>& pEnemies);
 
 private:
 	void MakeBurger();
+	void CheckIfHitEnemy();
 
 	int m_Level{};
 	int m_Column{};
@@ -36,5 +38,7 @@ private:
 	std::vector<std::vector<glm::vec2>>* m_pLevelIndices{};
 
 	float m_PosX{};
+
+	std::vector<std::shared_ptr<dae::GameObject>> m_pEnemies{};
 };
 

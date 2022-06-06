@@ -6,11 +6,12 @@
 #include "EventQueue.h"
 #include "GameObject.h"
 
-EnemyControllerComponent::EnemyControllerComponent(std::vector<std::vector<glm::vec2>>* pLevelIndices, unsigned enemyDims, glm::vec2 enemySize)
+EnemyControllerComponent::EnemyControllerComponent(std::vector<std::vector<glm::vec2>>* pLevelIndices, unsigned enemyDims, glm::vec2 enemySize, glm::vec2 spawnPoint)
 	: ControllerComponent(pLevelIndices, enemyDims, enemySize)
+	, m_FirstUpdate{ true }
 	, m_NeedsUpdateHorizontal{ NeedUpdate::None }
 	, m_NeedsUpdateVertical{ NeedUpdate::None }
-	, m_FirstUpdate{ true }
+	, m_SpawnPoint{ spawnPoint }
 {
 	m_MovementSpeed = 25.0f;
 }
@@ -22,8 +23,10 @@ void EnemyControllerComponent::SetPlayerTransform(dae::Transform* playerTransfor
 
 void EnemyControllerComponent::Startup()
 {
-	m_pOwner->GetTransform().SetPosition(20, 423, 0);
+	m_pOwner->GetTransform().SetPosition(m_SpawnPoint.x, m_SpawnPoint.y, 0);
 	AddObserver(m_pOwner->GetComponentOfType<EnemyStateComponent>());
+	m_pOwner->GetTransform().SetRect(CalculateBox());
+	m_IsInitialized = true;
 }
 
 void EnemyControllerComponent::Update(float deltaSec)
@@ -154,8 +157,12 @@ void EnemyControllerComponent::UpdateIfKilledMrPepper()
 		return;
 	}
 
-	const auto boxPlayer = CalculateBox(m_pPlayerTransform->GetPosition());
-	const auto boxEnemy = CalculateBox();
+	auto boxPlayer = CalculateBox(m_pPlayerTransform->GetPosition());
+	boxPlayer.width /= 2;
+	boxPlayer.height /= 2;
+	auto boxEnemy = CalculateBox();
+	boxEnemy.width /= 2;
+	boxEnemy.height /= 2;
 
 	if (IsOverlapping(boxPlayer, boxEnemy))
 	{

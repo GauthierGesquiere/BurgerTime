@@ -35,6 +35,11 @@ void BurgerComponent::Update(float deltaSec)
 			piece1->CheckPieceAbove(piece2);
 		}
 	}
+
+	for (const auto& piece : m_BurgerPieces)
+	{
+		piece->GetComponentOfType<BurgerPieceComponent>()->CheckIfHitEnemy(m_pEnemies);
+	}
 }
 
 void BurgerComponent::SetPlayerTransform(dae::Transform* pPlayerTransform)
@@ -43,6 +48,11 @@ void BurgerComponent::SetPlayerTransform(dae::Transform* pPlayerTransform)
 	{
 		burgerPiece->GetComponentOfType<BurgerPieceComponent>()->SetPlayerTransform(pPlayerTransform);
 	}
+}
+
+void BurgerComponent::SetAllEnemies(std::vector<std::shared_ptr<dae::GameObject>>& pEnemies)
+{
+	m_pEnemies = pEnemies;
 }
 
 void BurgerComponent::MakeBurger()
@@ -103,4 +113,12 @@ void BurgerComponent::MakeBurger()
 	gObject3->AddComponent(new BurgerPieceComponent(glm::vec2{ m_PosX, posY4 }, 2, BurgerPiece::BottomBread, m_SourceToDestRatio, m_pLevelIndices));
 	dae::SceneManager::GetInstance().GetActiveScene()->Add(gObject3);
 	m_BurgerPieces.push_back(gObject3);
+}
+
+void BurgerComponent::CheckIfHitEnemy()
+{
+	if (true)
+	{
+		
+	}
 }

@@ -25,6 +25,11 @@ void EnemyStateComponent::Startup()
 	{
 		m_SourcePath = "BurgerTime/Enemies/Pickle_";
 	}
+	if (const auto renderer = m_pOwner->GetComponentOfType<RenderSpriteComponent>())
+	{
+		renderer->SetTextureToDraw(m_SourcePath + "Walk.png", m_PlayerDims, m_PlayerDims, 0.5f, m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.x), m_PlayerDims * static_cast<unsigned int>(m_PlayerSize.y), LoopType::ForwardReverseLoop, -1, m_Mirror);
+		renderer->SetFreeze(2);
+	}
 }
 
 void EnemyStateComponent::Update(float deltaSec)

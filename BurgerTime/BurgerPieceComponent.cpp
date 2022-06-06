@@ -122,6 +122,31 @@ bool BurgerPieceComponent::CheckPieceAbove(BurgerPieceComponent* other)
 	return false;
 }
 
+void BurgerPieceComponent::CheckIfHitEnemy(std::vector<std::shared_ptr<dae::GameObject>>& pEnemies)
+{
+	if (!m_IsFalling)
+	{
+		return;
+	}
+
+	//std::shared_ptr<dae::GameObject> deletedEnemy;
+	for (auto enemy : pEnemies)
+	{
+		auto enemyBox = enemy->GetTransform().GetRect();
+		enemyBox.left = enemy->GetTransform().GetPosition().x;
+		enemyBox.bottom = enemy->GetTransform().GetPosition().y;
+		enemyBox.width /= 2;
+		enemyBox.height /= 2;
+
+		const auto box = CalculateBox();
+
+		if (IsOverlapping(enemyBox, box))
+		{
+			dae::SceneManager::GetInstance().GetActiveScene()->Remove(enemy);
+		}
+	}
+}
+
 void BurgerPieceComponent::CheckIfPlayerCoveredPiece(float deltaSec)
 {
 	if (!m_pPlayerTransform)
@@ -133,10 +158,6 @@ void BurgerPieceComponent::CheckIfPlayerCoveredPiece(float deltaSec)
 
 	playerRect.left = m_pPlayerTransform->GetPosition().x;
 	playerRect.bottom = m_pPlayerTransform->GetPosition().y + playerRect.height;
-	//playerRect.height = -playerRect.height;
-
-	//float intersectMin;
-	//float intersectMax;
 
 	if (!m_HasRightSide)
 	{
@@ -176,6 +197,7 @@ void BurgerPieceComponent::CheckIfPlayerCoveredPiece(float deltaSec)
 
 	if (m_HasRightSide && m_HasLeftSide && m_HasMid || m_PieceFellOn)
 	{
+		m_IsFalling = true;
 		if (!m_NeedsToStack)
 		{
 			UpdateGravity(deltaSec);
@@ -243,6 +265,7 @@ bool BurgerPieceComponent::HitFloor()
 				m_HasMid = false;
 				m_PieceFellOn = false;
 				m_AmountOfDrops--;
+				m_IsFalling = false;
 				return true;
 			}
 		}
