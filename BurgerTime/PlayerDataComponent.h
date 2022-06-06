@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #include "DataComponent.h"
 
 class PlayerDataComponent : public DataComponent

@@ -67,6 +67,7 @@ void PlayerControllerComponent::Startup()
 	AddInput();
 	m_pOwner->GetTransform().SetPosition( 297,  423, 0 );
 	AddObserver(m_pOwner->GetComponentOfType<PlayerStateComponent>());
+	m_pOwner->GetTransform().SetRect(CalculateBox());
 }
 
 void PlayerControllerComponent::Update(float deltaSec)

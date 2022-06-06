@@ -197,6 +197,8 @@ void PlayerStateComponent::IsThrowing(float deltaSec)
 	{
 		if (m_PreviousState != m_CurrentState)
 		{
+			ElapsedSec = 0.0f;
+
 			const std::string fullPath{ "ThrowPepper.png" };
 
 			if (m_PreviousState == State::Idle)

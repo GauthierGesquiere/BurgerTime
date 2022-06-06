@@ -32,6 +32,7 @@ private:
 	void CreatePlayers(unsigned int amount);
 	void CreateEnemy();
 	void LoadData();
+	void MakeBurger(int level);
 
 	//Dimensions
 	unsigned int m_LevelWidth{ 208 };
@@ -55,6 +56,7 @@ private:
 
 	std::shared_ptr<dae::GameObject> m_pPlayer{};
 	std::vector<std::shared_ptr<dae::GameObject>> m_pEnemies{};
+	std::vector<std::shared_ptr<dae::GameObject>> m_pBurgers{};
 
 	bool m_NeedsRestart{};
 	bool m_GameOver{};
@@ -64,5 +66,7 @@ private:
 	bool m_LevelIsReset{};
 
 	int m_AmountOfEnemies{};
+
+	int m_BurgersFinished{};
 };
 

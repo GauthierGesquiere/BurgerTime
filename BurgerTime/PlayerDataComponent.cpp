@@ -76,5 +76,6 @@ bool PlayerDataComponent::OnEvent(const dae::Event* event)
 	{
 		m_GameIsReset = true;
 	}
+
 	return false;
 }

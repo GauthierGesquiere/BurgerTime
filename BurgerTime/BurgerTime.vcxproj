@@ -159,6 +159,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BurgerComponent.cpp" />
+    <ClCompile Include="BurgerPieceComponent.cpp" />
     <ClCompile Include="BurgerTime.cpp" />
     <ClCompile Include="BurgerTimeGame.cpp" />
     <ClCompile Include="ControllerComponent.cpp" />
@@ -176,6 +178,8 @@
     <ClCompile Include="ThrowCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BurgerComponent.h" />
+    <ClInclude Include="BurgerPieceComponent.h" />
     <ClInclude Include="BurgerTimeGame.h" />
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="DataComponent.h" />

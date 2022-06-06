@@ -82,8 +82,9 @@ void RenderSpriteComponent::SetFreeze(int frame)
 	}
 	else
 	{
-		m_FreezeOnFrame = -1;
+		m_FreezeOnFrame = frame;
 	}
+	SetFrame(m_FreezeOnFrame);
 }
 
 void RenderSpriteComponent::SetFrame(unsigned frame)

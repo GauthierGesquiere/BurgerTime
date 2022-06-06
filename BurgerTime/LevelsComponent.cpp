@@ -1,6 +1,7 @@
 #include "LevelsComponent.h"
 #include <memory>
 
+#include "BurgerComponent.h"
 #include "DataComponent.h"
 #include "EnemyControllerComponent.h"
 #include "EnemyStateComponent.h"
@@ -44,6 +45,10 @@ bool LevelsComponent::OnEvent(const dae::Event* event)
 	{
 		m_GameOver = true;
 	}
+	if (event->Message == "FinishedBurger")
+	{
+		m_BurgersFinished++;
+	}
 	return false;
 }
 
@@ -54,10 +59,17 @@ void LevelsComponent::Startup()
 
 	dae::EventQueue::GetInstance().Subscribe("RestartLevel", this);
 	dae::EventQueue::GetInstance().Subscribe("GameOver", this);
+	dae::EventQueue::GetInstance().Subscribe("FinishedBurger", this);
 }
 
 void LevelsComponent::Update(float deltaSec)
 {
+	if (m_BurgersFinished == static_cast<int>(m_pBurgers.size()))
+	{
+		//Go to next level
+		
+	}
+
 	if (m_NeedsRestart || m_GameOver)
 	{
 		m_ElapsedSec += deltaSec;
@@ -75,7 +87,7 @@ void LevelsComponent::Update(float deltaSec)
 			dae::SceneManager::GetInstance().GetActiveScene()->Remove(m_pPlayer);
 
 			CreatePlayers(1);
-			CreateEnemy();
+			//CreateEnemy();
 
 			m_LevelIsReset = true;
 			dae::EventQueue::GetInstance().Broadcast(new dae::Event("LevelIsReset"));
@@ -100,11 +112,14 @@ void LevelsComponent::Update(float deltaSec)
 			if (m_ElapsedSecEnemy > 1)
 			{
 				m_ElapsedSecEnemy = 0.0f;
-				CreateEnemy();
-
+				//CreateEnemy();
 				for (const auto& enemy : m_pEnemies)
 				{
 					enemy->GetComponentOfType<EnemyControllerComponent>()->SetPlayerTransform(&m_pPlayer->GetTransform());
+				}
+				for (const auto& burger : m_pBurgers)
+				{
+					burger->GetComponentOfType<BurgerComponent>()->SetPlayerTransform(&m_pPlayer->GetTransform());
 				}
 			}
 		}
@@ -135,6 +150,7 @@ void LevelsComponent::LoadLevel(unsigned levelIndex)
 	fullPath = "Levels/Level" + std::to_string(levelIndex) + ".svg";
 	dae::ResourceManager::GetInstance().GetVerticesFromSvgFile(m_SourcePath + fullPath, m_LevelVertices, m_SourceToDestRatio);
 
+	MakeBurger(levelIndex);
 }
 
 void LevelsComponent::CreatePlayers(unsigned amount)
@@ -166,4 +182,12 @@ void LevelsComponent::LoadData()
 	gObject->AddComponent(new PlayerDataComponent(m_SourceToDestRatio));
 	gObject->AddComponent(new LevelDataComponent(m_SourceToDestRatio));
 	dae::SceneManager::GetInstance().GetActiveScene()->Add(gObject);
+}
+
+void LevelsComponent::MakeBurger(int level)
+{
+	const auto gObject = std::make_shared<dae::GameObject>();
+	gObject->AddComponent(new BurgerComponent(level, 3, m_SourceToDestRatio, &m_LevelVertices));
+	dae::SceneManager::GetInstance().GetActiveScene()->Add(gObject);
+	m_pBurgers.push_back(gObject);
 }
